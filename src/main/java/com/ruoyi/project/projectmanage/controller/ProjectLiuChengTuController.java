@@ -27,6 +27,8 @@ public class ProjectLiuChengTuController extends BaseController
 {
     @Resource
     private IProjectLiuChengTuService projectLiuChengTuService;
+    @Resource
+    private IProjectBaseService projectBaseService;
 
     /**
      * 获取模板列表
@@ -61,4 +63,36 @@ public class ProjectLiuChengTuController extends BaseController
         }
         return CommonResult.success(list,totalCount);
     }
+
+    /**
+     * 获取流程图数据列表
+     */
+    //@PreAuthorize("@ss.hasPermi('project:base:list')")
+    @RequestMapping(value = "/insertLiuChengTuDataLog", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult insertLiuChengTuDataLog(@RequestBody ProjectLiuChengTuDataLog log)
+    {
+        //新增一条记录，同时，根据是baseId还是templateId,来更新对应记录
+        Long userId=getUserId();
+        log.setOperateUserId(userId);
+        projectLiuChengTuService.insertProjectLiuChengTuDataLog(log);
+        //模板id不为空
+        if(log.getProjectLiuChengTuTemplateId()!=null){
+            ProjectLiuChengTuTemplate projectLiuChengTuTemplate=new ProjectLiuChengTuTemplate();
+            projectLiuChengTuTemplate.setId(log.getProjectLiuChengTuTemplateId());
+            projectLiuChengTuTemplate.setCurrentLiuChengTuDataLogId(log.getId());
+            projectLiuChengTuTemplate.setUpdateUserId(userId);
+            projectLiuChengTuService.updateProjectLiuChengTuTemplate(projectLiuChengTuTemplate);
+        }
+        //项目id不为空
+        if(log.getProjectBaseId()!=null){
+            ProjectBase projectBase=new ProjectBase();
+            projectBase.setId(log.getProjectBaseId());
+            projectBase.setCurrentLiuChengTuDataLogId(log.getId());
+            projectBase.setUpdateUserId(userId);
+            projectBaseService.updateProjectBase(projectBase);
+        }
+        return CommonResult.success(null);
+    }
+
 }

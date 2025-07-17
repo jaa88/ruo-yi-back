@@ -14,7 +14,6 @@ public class ProjectLiuChengTuDataLog {
     private Long operateUserId;
     private Date operateTime;
 
-
     public Long getId() {
         return id;
     }

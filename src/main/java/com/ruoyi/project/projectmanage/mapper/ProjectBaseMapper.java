@@ -15,4 +15,7 @@ public interface ProjectBaseMapper
     public int selectProjectBaseCount(QueryProjectBaseParam param);
 
     public List<ProjectBase> selectProjectBaseList(QueryProjectBaseParam param);
+
+    //更新项目
+    void updateProjectBase(ProjectBase projectBase);
 }

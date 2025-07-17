@@ -43,4 +43,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         order by  id asc
         limit #{ pageSize}  offset  #{startIndex}
     </select>
+
+    <insert id="insertProjectLiuChengTuDataLog" parameterType="com.ruoyi.project.projectmanage.domain.ProjectLiuChengTuDataLog" useGeneratedKeys="true" keyProperty="id">
+        insert into project_liu_cheng_tu_data_log(
+        project_base_id, current_cells_json_str, last_cells_json_str,
+        operate_user_id, operate_time, project_liu_cheng_tu_template_id)
+        VALUES
+        (#{projectBaseId},#{currentCellsJsonStr},#{lastCellsJsonStr},
+         #{operateUserId}, now(), #{projectLiuChengTuTemplateId})
+    </insert>
+
 </mapper>

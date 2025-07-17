@@ -15,4 +15,6 @@ public interface ProjectLiuChengTuTemplateMapper
     public int selectProjectLiuChengTuTemplateCount(QueryProjectLiuChengTuTemplateParam param);
 
     public List<ProjectLiuChengTuTemplate> selectProjectLiuChengTuTemplateList(QueryProjectLiuChengTuTemplateParam param);
+
+    void updateProjectLiuChengTuTemplate(ProjectLiuChengTuTemplate projectLiuChengTuTemplate);
 }

@@ -48,4 +48,14 @@ public class ProjectLiuChengTuServiceImpl implements IProjectLiuChengTuService {
     public List<ProjectLiuChengTuDataLog> selectProjectLiuChengTuDataLogList(QueryProjectLiuChengTuDataLogParam param) {
         return projectLiuChengTuDataLogMapper.selectProjectLiuChengTuDataLogList(param);
     }
+
+    @Override
+    public void insertProjectLiuChengTuDataLog(ProjectLiuChengTuDataLog log) {
+        projectLiuChengTuDataLogMapper.insertProjectLiuChengTuDataLog(log);
+    }
+
+    @Override
+    public void updateProjectLiuChengTuTemplate(ProjectLiuChengTuTemplate projectLiuChengTuTemplate) {
+        projectLiuChengTuTemplateMapper.updateProjectLiuChengTuTemplate(projectLiuChengTuTemplate);
+    }
 }

@@ -42,4 +42,9 @@ public class ProjectBaseServiceImpl implements IProjectBaseService {
 
         return projectBaseMapper.selectProjectBaseList(param);
     }
+
+    @Override
+    public void updateProjectBase(ProjectBase projectBase) {
+        projectBaseMapper.updateProjectBase(projectBase);
+    }
 }

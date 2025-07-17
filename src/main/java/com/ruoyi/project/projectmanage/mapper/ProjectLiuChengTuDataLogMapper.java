@@ -14,4 +14,6 @@ public interface ProjectLiuChengTuDataLogMapper
     public int selectProjectLiuChengTuDataLogCount(QueryProjectLiuChengTuDataLogParam param);
 
     public List<ProjectLiuChengTuDataLog> selectProjectLiuChengTuDataLogList(QueryProjectLiuChengTuDataLogParam param);
+
+    void insertProjectLiuChengTuDataLog(ProjectLiuChengTuDataLog log);
 }

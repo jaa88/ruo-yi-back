@@ -35,4 +35,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         order by  id asc
         limit #{ pageSize}  offset  #{startIndex}
     </select>
+
+    <update id="updateProjectBase" parameterType="com.ruoyi.project.projectmanage.domain.ProjectBase">
+        update project_base set current_liu_cheng_tu_data_log_id=#{currentLiuChengTuDataLogId},
+        update_user_id=#{updateUserId},
+        update_time=now()
+        where id=#{id}
+    </update>
+
 </mapper>
