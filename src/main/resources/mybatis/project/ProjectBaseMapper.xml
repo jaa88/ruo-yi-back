@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.projectmanage.mapper.ProjectBaseMapper">
+    
+    <resultMap type="com.ruoyi.project.projectmanage.domain.ProjectBase" id="tempMap">
+    	<id     property="id"      column="id"      />
+        <result property="projectName"    column="project_name"    />
+        <result property="currentLiuChengTuDataLogId"     column="current_liu_cheng_tu_data_log_id"     />
+        <result property="createTime"   column="create_time"   />
+        <result property="projectChargeUserId"    column="project_charge_user_id"    />
+        <result property="updateUserId"      column="update_user_id"      />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <select id="selectProjectBaseCount" parameterType="com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectBaseParam" resultType="int">
+        SELECT count(1) from project_base
+        <where>
+            1=1
+            <if test="projectName != null and  projectName !=''">
+                and project_name like CONCAT('%',#{projectName},'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectProjectBaseList" parameterType="com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectBaseParam" resultMap="tempMap">
+        SELECT * from project_base
+        <where>
+            1=1
+            <if test="projectName != null and  projectName !=''">
+                and project_name like CONCAT('%',#{projectName},'%')
+            </if>
+        </where>
+        order by  id asc
+        limit #{ pageSize}  offset  #{startIndex}
+    </select>
+</mapper>

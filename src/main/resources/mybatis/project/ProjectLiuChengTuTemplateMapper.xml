@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.projectmanage.mapper.ProjectLiuChengTuTemplateMapper">
+    
+    <resultMap type="com.ruoyi.project.projectmanage.domain.ProjectLiuChengTuTemplate" id="tempMap">
+    	<id     property="id"      column="id"      />
+        <result property="templateName"    column="template_name"    />
+        <result property="currentLiuChengTuDataLogId"     column="current_liu_cheng_tu_data_log_id"     />
+        <result property="createUserId"   column="create_user_id"   />
+        <result property="createTime"   column="create_time"   />
+        <result property="remark"    column="remark"    />
+        <result property="updateUserId"      column="update_user_id"      />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <select id="selectProjectLiuChengTuTemplateCount" parameterType="com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectLiuChengTuTemplateParam" resultType="int">
+        SELECT count(1) from project_liu_cheng_tu_template
+        <where>
+            1=1
+            <if test="templateName != null and  templateName !=''">
+                and template_name like CONCAT('%',#{templateName},'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectProjectLiuChengTuTemplateList" parameterType="com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectLiuChengTuTemplateParam" resultMap="tempMap">
+        SELECT * from project_liu_cheng_tu_template
+        <where>
+            1=1
+            <if test="templateName != null and  templateName !=''">
+                and template_name like CONCAT('%',#{templateName},'%')
+            </if>
+        </where>
+        order by  id asc
+        limit #{ pageSize}  offset  #{startIndex}
+    </select>
+</mapper>

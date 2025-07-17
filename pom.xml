@@ -4,13 +4,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.ruoyi</groupId>
-    <artifactId>tcga-common-back</artifactId>
+    <artifactId>ruo-yi-back</artifactId>
     <version>3.9.0</version>
     <packaging>war</packaging>
 
     <name>ruoyi</name>
     <url>http://www.ruoyi.vip</url>
-    <description>tcga通用后端</description>
+    <description>ruo-yi-back</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -43,6 +43,12 @@
     </properties>
 
     <dependencies>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>
+        </dependency>
 
         <!-- SpringBoot 核心包 -->
         <dependency>

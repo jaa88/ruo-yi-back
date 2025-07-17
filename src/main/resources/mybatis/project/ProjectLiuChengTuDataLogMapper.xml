@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.projectmanage.mapper.ProjectLiuChengTuDataLogMapper">
+    
+    <resultMap type="com.ruoyi.project.projectmanage.domain.ProjectLiuChengTuDataLog" id="tempMap">
+    	<id     property="id"      column="id"      />
+        <result property="projectBaseId"    column="project_base_id"    />
+        <result property="projectLiuChengTuTemplateId"     column="project_liu_cheng_tu_template_id"     />
+        <result property="currentCellsJsonStr"    column="current_cells_json_str"    />
+        <result property="lastCellsJsonStr"    column="last_cells_json_str"    />
+        <result property="operateUserId"   column="operate_user_id"   />
+        <result property="operateTime"   column="operate_time"   />
+    </resultMap>
+
+    <select id="selectProjectLiuChengTuDataLogCount" parameterType="com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectLiuChengTuDataLogParam" resultType="int">
+        SELECT count(1) from project_liu_cheng_tu_data_log
+        <where>
+            1=1
+            <if test="projectBaseId != null and  projectBaseId !=''">
+                and project_base_id =#{projectBaseId}
+            </if>
+
+            <if test="projectLiuChengTuTemplateId != null and  projectLiuChengTuTemplateId !=''">
+                and project_liu_cheng_tu_template_id =#{projectLiuChengTuTemplateId}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectProjectLiuChengTuDataLogList" parameterType="com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectLiuChengTuDataLogParam" resultMap="tempMap">
+        SELECT * from project_liu_cheng_tu_data_log
+        <where>
+            1=1
+            <if test="projectBaseId != null and  projectBaseId !=''">
+                and project_base_id =#{projectBaseId}
+            </if>
+
+            <if test="projectLiuChengTuTemplateId != null and  projectLiuChengTuTemplateId !=''">
+                and project_liu_cheng_tu_template_id =#{projectLiuChengTuTemplateId}
+            </if>
+        </where>
+        order by  id asc
+        limit #{ pageSize}  offset  #{startIndex}
+    </select>
+</mapper>

@@ -109,7 +109,7 @@ mybatis:
 # PageHelper分页插件
 pagehelper:
   helperDialect: mysql
-  supportMethodsArguments: true
+  supportMethodsArguments: false
   params: count=countSql
 
 # Swagger配置
