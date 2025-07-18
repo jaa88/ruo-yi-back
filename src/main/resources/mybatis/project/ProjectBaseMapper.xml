@@ -12,12 +12,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="projectChargeUserId"    column="project_charge_user_id"    />
         <result property="updateUserId"      column="update_user_id"      />
         <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="deleteFlag"    column="delete_flag"    />
     </resultMap>
 
     <select id="selectProjectBaseCount" parameterType="com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectBaseParam" resultType="int">
         SELECT count(1) from project_base
         <where>
-            1=1
+            delete_flag=0
             <if test="projectName != null and  projectName !=''">
                 and project_name like CONCAT('%',#{projectName},'%')
             </if>
@@ -27,7 +29,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectProjectBaseList" parameterType="com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectBaseParam" resultMap="tempMap">
         SELECT * from project_base
         <where>
-            1=1
+            delete_flag=0
             <if test="projectName != null and  projectName !=''">
                 and project_name like CONCAT('%',#{projectName},'%')
             </if>
@@ -37,10 +39,37 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
     <update id="updateProjectBase" parameterType="com.ruoyi.project.projectmanage.domain.ProjectBase">
-        update project_base set current_liu_cheng_tu_data_log_id=#{currentLiuChengTuDataLogId},
+        update project_base set
+        <if test="currentLiuChengTuDataLogId!=null">
+            current_liu_cheng_tu_data_log_id=#{currentLiuChengTuDataLogId},
+        </if>
+        <if test="projectName!=null and projectName!=''">
+            project_name=#{projectName},
+        </if>
+        <if test="remark!=null">
+            remark=#{remark},
+        </if>
         update_user_id=#{updateUserId},
         update_time=now()
         where id=#{id}
     </update>
+
+    <insert id="insertProjectBase" parameterType="com.ruoyi.project.projectmanage.domain.ProjectBase" useGeneratedKeys="true" keyProperty="id">
+        insert into project_base (
+         project_name, current_liu_cheng_tu_data_log_id, create_time,
+         project_charge_user_id, update_user_id, update_time,remark)
+        VALUES
+        (#{projectName},#{currentLiuChengTuDataLogId},now(),
+         #{projectChargeUserId}, #{updateUserId}, now(),#{remark})
+    </insert>
+
+    <update id="deleteProjectBase" parameterType="com.ruoyi.project.projectmanage.domain.ProjectBase">
+        update project_base set
+        delete_flag=1,
+        update_user_id=#{updateUserId},
+        update_time=now()
+        where id=#{id}
+    </update>
+
 
 </mapper>

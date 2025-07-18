@@ -15,6 +15,24 @@ public class ProjectLiuChengTuTemplate {
     private Date updateTime;
     private String templateName;
     private String remark;
+    private Integer deleteFlag;
+    private String cellsJsonStr;
+
+    public String getCellsJsonStr() {
+        return cellsJsonStr;
+    }
+
+    public void setCellsJsonStr(String cellsJsonStr) {
+        this.cellsJsonStr = cellsJsonStr;
+    }
+
+    public Integer getDeleteFlag() {
+        return deleteFlag;
+    }
+
+    public void setDeleteFlag(Integer deleteFlag) {
+        this.deleteFlag = deleteFlag;
+    }
 
     public Long getId() {
         return id;

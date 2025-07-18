@@ -14,7 +14,10 @@ import com.ruoyi.project.projectmanage.service.IProjectLiuChengTuService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 参数配置 服务层实现
@@ -28,6 +31,8 @@ public class ProjectLiuChengTuServiceImpl implements IProjectLiuChengTuService {
     private ProjectLiuChengTuTemplateMapper projectLiuChengTuTemplateMapper;
     @Resource
     private ProjectLiuChengTuDataLogMapper projectLiuChengTuDataLogMapper;
+    @Resource
+    private IProjectLiuChengTuService projectLiuChengTuService;
 
     @Override
     public int selectProjectLiuChengTuTemplateCount(QueryProjectLiuChengTuTemplateParam param) {
@@ -36,7 +41,22 @@ public class ProjectLiuChengTuServiceImpl implements IProjectLiuChengTuService {
 
     @Override
     public List<ProjectLiuChengTuTemplate> selectProjectLiuChengTuTemplateList(QueryProjectLiuChengTuTemplateParam param) {
-        return projectLiuChengTuTemplateMapper.selectProjectLiuChengTuTemplateList(param);
+        List<ProjectLiuChengTuTemplate> list= projectLiuChengTuTemplateMapper.selectProjectLiuChengTuTemplateList(param);
+        List<Long> idList=new ArrayList<>();
+        for(ProjectLiuChengTuTemplate template:list){
+            if(template.getCurrentLiuChengTuDataLogId()!=null){
+                idList.add(template.getCurrentLiuChengTuDataLogId());
+            }
+        }
+        if(idList.size()>0){
+            Map<Long, ProjectLiuChengTuDataLog> idTargetProjectLiuChengTuDataLogMap=projectLiuChengTuService.selectIdTargetProjectLiuChengTuDataLogMap(idList);
+            for(ProjectLiuChengTuTemplate template:list){
+                if(idTargetProjectLiuChengTuDataLogMap.get(template.getCurrentLiuChengTuDataLogId())!=null){
+                    template.setCellsJsonStr(idTargetProjectLiuChengTuDataLogMap.get(template.getCurrentLiuChengTuDataLogId()).getCurrentCellsJsonStr());
+                }
+            }
+        }
+        return list;
     }
 
     @Override
@@ -55,7 +75,37 @@ public class ProjectLiuChengTuServiceImpl implements IProjectLiuChengTuService {
     }
 
     @Override
-    public void updateProjectLiuChengTuTemplate(ProjectLiuChengTuTemplate projectLiuChengTuTemplate) {
-        projectLiuChengTuTemplateMapper.updateProjectLiuChengTuTemplate(projectLiuChengTuTemplate);
+    public void insertProjectTemplate(ProjectLiuChengTuTemplate projectLiuChengTuTemplate) {
+        projectLiuChengTuTemplateMapper.insertProjectTemplate(projectLiuChengTuTemplate);
+    }
+
+    @Override
+    public void updateProjectTemplate(ProjectLiuChengTuTemplate projectLiuChengTuTemplate) {
+        projectLiuChengTuTemplateMapper.updateProjectTemplate(projectLiuChengTuTemplate);
+    }
+
+    @Override
+    public void deleteProjectTemplate(ProjectLiuChengTuTemplate projectLiuChengTuTemplate) {
+        projectLiuChengTuTemplateMapper.deleteProjectTemplate(projectLiuChengTuTemplate);
+    }
+
+    @Override
+    public ProjectLiuChengTuDataLog selectProjectLiuChengTuDataLogById(Long id) {
+        return projectLiuChengTuDataLogMapper.selectProjectLiuChengTuDataLogById(id);
+    }
+
+    @Override
+    public List<ProjectLiuChengTuDataLog> selectProjectLiuChengTuDataLogListByIdList(List<Long> idList) {
+        return projectLiuChengTuDataLogMapper.selectProjectLiuChengTuDataLogListByIdList(idList);
+    }
+
+    @Override
+    public Map<Long, ProjectLiuChengTuDataLog> selectIdTargetProjectLiuChengTuDataLogMap(List<Long> idList) {
+        Map<Long, ProjectLiuChengTuDataLog> map=new HashMap<>();
+        List<ProjectLiuChengTuDataLog> logList=projectLiuChengTuDataLogMapper.selectProjectLiuChengTuDataLogListByIdList(idList);
+        for(ProjectLiuChengTuDataLog log:logList){
+            map.put(log.getId(),log);
+        }
+        return map;
     }
 }

@@ -16,5 +16,10 @@ public interface ProjectLiuChengTuTemplateMapper
 
     public List<ProjectLiuChengTuTemplate> selectProjectLiuChengTuTemplateList(QueryProjectLiuChengTuTemplateParam param);
 
-    void updateProjectLiuChengTuTemplate(ProjectLiuChengTuTemplate projectLiuChengTuTemplate);
+    void insertProjectTemplate(ProjectLiuChengTuTemplate projectLiuChengTuTemplate);
+
+    void updateProjectTemplate(ProjectLiuChengTuTemplate projectLiuChengTuTemplate);
+
+    //删除流程模板
+    void deleteProjectTemplate(ProjectLiuChengTuTemplate projectLiuChengTuTemplate);
 }

@@ -18,4 +18,8 @@ public interface IProjectBaseService
 
     //更新项目
     void updateProjectBase(ProjectBase projectBase);
+    //新增项目
+    void insertProjectBase(ProjectBase projectBase);
+
+    void deleteProjectBase(ProjectBase projectBase);
 }

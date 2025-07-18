@@ -13,12 +13,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="remark"    column="remark"    />
         <result property="updateUserId"      column="update_user_id"      />
         <result property="updateTime"    column="update_time"    />
+        <result property="deleteFlag"    column="delete_flag"    />
     </resultMap>
 
     <select id="selectProjectLiuChengTuTemplateCount" parameterType="com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectLiuChengTuTemplateParam" resultType="int">
         SELECT count(1) from project_liu_cheng_tu_template
         <where>
-            1=1
+            delete_flag=0
             <if test="templateName != null and  templateName !=''">
                 and template_name like CONCAT('%',#{templateName},'%')
             </if>
@@ -28,7 +29,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectProjectLiuChengTuTemplateList" parameterType="com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectLiuChengTuTemplateParam" resultMap="tempMap">
         SELECT * from project_liu_cheng_tu_template
         <where>
-            1=1
+            delete_flag=0
             <if test="templateName != null and  templateName !=''">
                 and template_name like CONCAT('%',#{templateName},'%')
             </if>
@@ -37,10 +38,28 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         limit #{ pageSize}  offset  #{startIndex}
     </select>
 
-    <update id="updateProjectLiuChengTuTemplate" parameterType="com.ruoyi.project.projectmanage.domain.ProjectLiuChengTuTemplate">
+    <insert id="insertProjectTemplate" parameterType="com.ruoyi.project.projectmanage.domain.ProjectLiuChengTuTemplate" useGeneratedKeys="true" keyProperty="id">
+        insert into project_liu_cheng_tu_template(
+        current_liu_cheng_tu_data_log_id, create_user_id, create_time,
+        update_user_id, update_time, template_name, remark)
+        VALUES
+        (#{currentLiuChengTuDataLogId},#{createUserId},now(),
+         #{updateUserId}, now(),#{templateName},#{remark})
+    </insert>
+
+    <update id="updateProjectTemplate" parameterType="com.ruoyi.project.projectmanage.domain.ProjectLiuChengTuTemplate">
         update project_liu_cheng_tu_template set current_liu_cheng_tu_data_log_id=#{currentLiuChengTuDataLogId},
         update_user_id=#{updateUserId},
         update_time=now()
         where id=#{id}
     </update>
+
+    <update id="deleteProjectTemplate" parameterType="com.ruoyi.project.projectmanage.domain.ProjectLiuChengTuTemplate">
+        update project_liu_cheng_tu_template set
+        delete_flag=1,
+        update_user_id=#{updateUserId},
+        update_time=now()
+        where id=#{id}
+    </update>
+
 </mapper>

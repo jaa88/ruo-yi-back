@@ -13,6 +13,34 @@ public class ProjectBase {
     private Long projectChargeUserId;
     private Long updateUserId;
     private Date updateTime;
+    private String remark;
+    private Integer deleteFlag;
+    private String cellsJsonStr;
+
+    public String getCellsJsonStr() {
+        return cellsJsonStr;
+    }
+
+    public void setCellsJsonStr(String cellsJsonStr) {
+        this.cellsJsonStr = cellsJsonStr;
+    }
+
+
+    public Integer getDeleteFlag() {
+        return deleteFlag;
+    }
+
+    public void setDeleteFlag(Integer deleteFlag) {
+        this.deleteFlag = deleteFlag;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
 
     public Long getId() {
         return id;

@@ -44,6 +44,25 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         limit #{ pageSize}  offset  #{startIndex}
     </select>
 
+    <select id="selectProjectLiuChengTuDataLogById" parameterType="long" resultMap="tempMap">
+        SELECT * from project_liu_cheng_tu_data_log where id ={id}
+    </select>
+
+    <select id="selectProjectLiuChengTuDataLogListByIdList" parameterType="list" resultMap="tempMap">
+
+        SELECT * from project_liu_cheng_tu_data_log
+        <where>
+            1=1
+            <if test="idList != null and  idList.size()>0">
+                and  id in
+                <foreach collection="idList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        limit 1000
+    </select>
+
     <insert id="insertProjectLiuChengTuDataLog" parameterType="com.ruoyi.project.projectmanage.domain.ProjectLiuChengTuDataLog" useGeneratedKeys="true" keyProperty="id">
         insert into project_liu_cheng_tu_data_log(
         project_base_id, current_cells_json_str, last_cells_json_str,

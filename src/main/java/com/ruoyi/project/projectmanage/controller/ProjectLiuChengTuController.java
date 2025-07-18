@@ -82,7 +82,7 @@ public class ProjectLiuChengTuController extends BaseController
             projectLiuChengTuTemplate.setId(log.getProjectLiuChengTuTemplateId());
             projectLiuChengTuTemplate.setCurrentLiuChengTuDataLogId(log.getId());
             projectLiuChengTuTemplate.setUpdateUserId(userId);
-            projectLiuChengTuService.updateProjectLiuChengTuTemplate(projectLiuChengTuTemplate);
+            projectLiuChengTuService.updateProjectTemplate(projectLiuChengTuTemplate);
         }
         //项目id不为空
         if(log.getProjectBaseId()!=null){
@@ -92,6 +92,46 @@ public class ProjectLiuChengTuController extends BaseController
             projectBase.setUpdateUserId(userId);
             projectBaseService.updateProjectBase(projectBase);
         }
+        return CommonResult.success(null);
+    }
+
+    /**
+     * 新增模板
+     */
+    //@PreAuthorize("@ss.hasPermi('project:base:list')")
+    @RequestMapping(value = "/insertProjectTemplate", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult insertProjectTemplate(@RequestBody ProjectLiuChengTuTemplate projectLiuChengTuTemplate)
+    {
+        projectLiuChengTuTemplate.setUpdateUserId(getUserId());
+        projectLiuChengTuTemplate.setCreateUserId(getUserId());
+        projectLiuChengTuService.insertProjectTemplate(projectLiuChengTuTemplate);
+        return CommonResult.success(null);
+    }
+
+    /**
+     * 更新模板
+     */
+    //@PreAuthorize("@ss.hasPermi('project:base:list')")
+    @RequestMapping(value = "/updateProjectTemplate", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult updateProjectBase(@RequestBody ProjectLiuChengTuTemplate projectLiuChengTuTemplate)
+    {
+        projectLiuChengTuTemplate.setUpdateUserId(getUserId());
+        projectLiuChengTuService.updateProjectTemplate(projectLiuChengTuTemplate);
+        return CommonResult.success(null);
+    }
+
+    /**
+     * 删除模板
+     */
+    //@PreAuthorize("@ss.hasPermi('project:base:list')")
+    @RequestMapping(value = "/deleteProjectTemplate", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult deleteProjectTemplate(@RequestBody ProjectLiuChengTuTemplate projectLiuChengTuTemplate)
+    {
+        projectLiuChengTuTemplate.setUpdateUserId(getUserId());
+        projectLiuChengTuService.deleteProjectTemplate(projectLiuChengTuTemplate);
         return CommonResult.success(null);
     }
 

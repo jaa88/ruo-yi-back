@@ -41,4 +41,43 @@ public class ProjectBaseController extends BaseController
         return CommonResult.success(projectBaseList,totalCount);
     }
 
+    /**
+     * 新增项目
+     */
+    //@PreAuthorize("@ss.hasPermi('project:base:list')")
+    @RequestMapping(value = "/insertProjectBase", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult insertProjectBase(@RequestBody ProjectBase projectBase)
+    {
+        projectBase.setUpdateUserId(getUserId());
+        projectBaseService.insertProjectBase(projectBase);
+        return CommonResult.success(null);
+    }
+
+    /**
+     * 更新项目
+     */
+    //@PreAuthorize("@ss.hasPermi('project:base:list')")
+    @RequestMapping(value = "/updateProjectBase", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult updateProjectBase(@RequestBody ProjectBase projectBase)
+    {
+        projectBase.setUpdateUserId(getUserId());
+        projectBaseService.updateProjectBase(projectBase);
+        return CommonResult.success(null);
+    }
+
+    /**
+     * 删除项目
+     */
+    //@PreAuthorize("@ss.hasPermi('project:base:list')")
+    @RequestMapping(value = "/deleteProjectBase", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult deleteProjectBase(@RequestBody ProjectBase projectBase)
+    {
+        projectBase.setUpdateUserId(getUserId());
+        projectBaseService.deleteProjectBase(projectBase);
+        return CommonResult.success(null);
+    }
+
 }
