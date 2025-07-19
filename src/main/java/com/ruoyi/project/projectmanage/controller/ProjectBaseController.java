@@ -63,7 +63,7 @@ public class ProjectBaseController extends BaseController
     public CommonResult updateProjectBase(@RequestBody ProjectBase projectBase)
     {
         projectBase.setUpdateUserId(getUserId());
-        projectBaseService.updateProjectBase(projectBase);
+        projectBaseService.updateProjectBase(projectBase,false);
         return CommonResult.success(null);
     }
 

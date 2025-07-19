@@ -90,7 +90,7 @@ public class ProjectLiuChengTuController extends BaseController
             projectBase.setId(log.getProjectBaseId());
             projectBase.setCurrentLiuChengTuDataLogId(log.getId());
             projectBase.setUpdateUserId(userId);
-            projectBaseService.updateProjectBase(projectBase);
+            projectBaseService.updateProjectBase(projectBase,true);
         }
         return CommonResult.success(null);
     }

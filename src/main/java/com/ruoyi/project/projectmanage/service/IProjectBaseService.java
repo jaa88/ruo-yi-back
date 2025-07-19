@@ -17,7 +17,7 @@ public interface IProjectBaseService
     public List<ProjectBase> selectProjectBaseList(QueryProjectBaseParam param);
 
     //更新项目
-    void updateProjectBase(ProjectBase projectBase);
+    void updateProjectBase(ProjectBase projectBase,boolean onlyUpdateLiuChengTuDataLogFlag);
     //新增项目
     void insertProjectBase(ProjectBase projectBase);
 

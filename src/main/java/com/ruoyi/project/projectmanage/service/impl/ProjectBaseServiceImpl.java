@@ -104,22 +104,24 @@ public class ProjectBaseServiceImpl implements IProjectBaseService {
     }
 
     @Override
-    public void updateProjectBase(ProjectBase projectBase) {
-        //目前的userIdList
-        List<Long> curCanEditProjectUserIdList=projectBase.getCanEditProjectUserIdList();
-        //获取数据库中的canEditProjectUserIdList
-        Set<Long> dbCanEditProjectUserIdSet=getDbCanEditProjectUserIdSet(projectBase.getId());
-        //需要新增的权限
-        List<ProjectBaseAndUserRelation> newRelationList=getNewProjectBaseAndUserRelationList(curCanEditProjectUserIdList,dbCanEditProjectUserIdSet,projectBase.getUpdateUserId(),projectBase.getId());
-        //需要删除的权限
-        List<Long> needDeleteRelationIdLsit=getNeedDeleteRelationIdList(curCanEditProjectUserIdList,projectBase.getId());
-        //执行新增操作
-        if(newRelationList.size()>0){
-            projectBaseAndUserRelationService.insertProjectBaseAndUserRelationList(newRelationList);
-        }
-        //执行删除操作
-        if(needDeleteRelationIdLsit.size()>0){
-            projectBaseAndUserRelationService.deleteProjectBaseAndUserRelationByIdList(needDeleteRelationIdLsit);
+    public void updateProjectBase(ProjectBase projectBase,boolean onlyUpdateLiuChengTuDataLogFlag) {
+        if(!onlyUpdateLiuChengTuDataLogFlag){
+            //目前的userIdList
+            List<Long> curCanEditProjectUserIdList=projectBase.getCanEditProjectUserIdList();
+            //获取数据库中的canEditProjectUserIdList
+            Set<Long> dbCanEditProjectUserIdSet=getDbCanEditProjectUserIdSet(projectBase.getId());
+            //需要新增的权限
+            List<ProjectBaseAndUserRelation> newRelationList=getNewProjectBaseAndUserRelationList(curCanEditProjectUserIdList,dbCanEditProjectUserIdSet,projectBase.getUpdateUserId(),projectBase.getId());
+            //需要删除的权限
+            List<Long> needDeleteRelationIdLsit=getNeedDeleteRelationIdList(curCanEditProjectUserIdList,projectBase.getId());
+            //执行新增操作
+            if(newRelationList.size()>0){
+                projectBaseAndUserRelationService.insertProjectBaseAndUserRelationList(newRelationList);
+            }
+            //执行删除操作
+            if(needDeleteRelationIdLsit.size()>0){
+                projectBaseAndUserRelationService.deleteProjectBaseAndUserRelationByIdList(needDeleteRelationIdLsit);
+            }
         }
         projectBaseMapper.updateProjectBase(projectBase);
     }
