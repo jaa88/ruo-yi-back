@@ -3,6 +3,8 @@ package com.ruoyi.project.system.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.common.api.CommonResult;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -245,12 +247,12 @@ public class SysUserController extends BaseController
     }
 
     /**
-     * 获取部门树列表
+     * 获取所有用户信息
      */
-    @PreAuthorize("@ss.hasPermi('system:user:list')")
-    @GetMapping("/deptTree")
-    public AjaxResult deptTree(SysDept dept)
+    @GetMapping("/selectAllUserList")
+    public CommonResult selectAllUserList()
     {
-        return success(deptService.selectDeptTreeList(dept));
+        List<SysUser> sysUserList=userService.selectAllUserList();
+        return CommonResult.success(sysUserList);
     }
 }

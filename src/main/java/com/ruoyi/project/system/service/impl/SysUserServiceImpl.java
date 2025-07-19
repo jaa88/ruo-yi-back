@@ -1,7 +1,9 @@
 package com.ruoyi.project.system.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.validation.Validator;
 import org.slf4j.Logger;
@@ -546,5 +548,20 @@ public class SysUserServiceImpl implements ISysUserService
             successMsg.insert(0, "恭喜您，数据已全部导入成功！共 " + successNum + " 条，数据如下：");
         }
         return successMsg.toString();
+    }
+
+    @Override
+    public List<SysUser> selectAllUserList() {
+        return userMapper.selectAllUserList();
+    }
+
+    @Override
+    public Map<Long, SysUser> selectAllUserMap() {
+        List<SysUser> sysUserList=userMapper.selectAllUserList();
+        Map<Long,SysUser> sysUserMap=new HashMap<>();
+        for(SysUser sysUser:sysUserList){
+            sysUserMap.put(sysUser.getUserId(),sysUser);
+        }
+        return sysUserMap;
     }
 }

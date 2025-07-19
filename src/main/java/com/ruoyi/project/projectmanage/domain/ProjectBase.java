@@ -1,6 +1,9 @@
 package com.ruoyi.project.projectmanage.domain;
 
+import com.ruoyi.project.system.domain.SysUser;
+
 import java.util.Date;
+import java.util.List;
 
 /*
 * 模型基础类
@@ -16,6 +19,24 @@ public class ProjectBase {
     private String remark;
     private Integer deleteFlag;
     private String cellsJsonStr;
+    private List<Long> canEditProjectUserIdList;
+    private List<SysUser> canEditProjectUserList;
+
+    public List<Long> getCanEditProjectUserIdList() {
+        return canEditProjectUserIdList;
+    }
+
+    public void setCanEditProjectUserIdList(List<Long> canEditProjectUserIdList) {
+        this.canEditProjectUserIdList = canEditProjectUserIdList;
+    }
+
+    public List<SysUser> getCanEditProjectUserList() {
+        return canEditProjectUserList;
+    }
+
+    public void setCanEditProjectUserList(List<SysUser> canEditProjectUserList) {
+        this.canEditProjectUserList = canEditProjectUserList;
+    }
 
     public String getCellsJsonStr() {
         return cellsJsonStr;
