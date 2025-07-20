@@ -6,6 +6,7 @@ import com.ruoyi.project.projectmanage.domain.ProjectBase;
 import com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectBaseParam;
 import com.ruoyi.project.projectmanage.service.IProjectBaseService;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;

@@ -21,6 +21,16 @@ public class ProjectBase {
     private String cellsJsonStr;
     private List<Long> canEditProjectUserIdList;
     private List<SysUser> canEditProjectUserList;
+    //节点关系
+    private List<ProjectLiuChengTuNodeTargetUserRelation> relationList;
+
+    public List<ProjectLiuChengTuNodeTargetUserRelation> getRelationList() {
+        return relationList;
+    }
+
+    public void setRelationList(List<ProjectLiuChengTuNodeTargetUserRelation> relationList) {
+        this.relationList = relationList;
+    }
 
     public List<Long> getCanEditProjectUserIdList() {
         return canEditProjectUserIdList;

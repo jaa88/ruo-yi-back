@@ -1,20 +1,20 @@
 package com.ruoyi.project.projectmanage.service.impl;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.framework.redis.RedisCache;
-import com.ruoyi.project.projectmanage.domain.ProjectBase;
-import com.ruoyi.project.projectmanage.domain.ProjectBaseAndUserRelation;
-import com.ruoyi.project.projectmanage.domain.ProjectLiuChengTuDataLog;
+import com.ruoyi.project.projectmanage.domain.*;
 import com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectBaseAndUserRelationParam;
 import com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectBaseParam;
+import com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectLiuChengTuNodeTargetUserRelationParam;
 import com.ruoyi.project.projectmanage.mapper.ProjectBaseMapper;
-import com.ruoyi.project.projectmanage.service.IProjectBaseAndUserRelationService;
-import com.ruoyi.project.projectmanage.service.IProjectBaseService;
-import com.ruoyi.project.projectmanage.service.IProjectLiuChengTuService;
+import com.ruoyi.project.projectmanage.service.*;
 import com.ruoyi.project.system.domain.SysConfig;
 import com.ruoyi.project.system.domain.SysUser;
 import com.ruoyi.project.system.mapper.SysConfigMapper;
@@ -22,6 +22,7 @@ import com.ruoyi.project.system.service.ISysConfigService;
 import com.ruoyi.project.system.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -43,6 +44,10 @@ public class ProjectBaseServiceImpl implements IProjectBaseService {
     private IProjectBaseAndUserRelationService projectBaseAndUserRelationService;
     @Resource
     private ISysUserService sysUserService;
+    @Resource
+    private IProjectLiuChengTuNodeService projectLiuChengTuNodeService;
+    @Resource
+    private IProjectLiuChengTuNodeTargetUserRelationService projectLiuChengTuNodeTargetUserRelationService;
 
     @Override
     public int selectProjectBaseCount(QueryProjectBaseParam param) {
@@ -104,6 +109,7 @@ public class ProjectBaseServiceImpl implements IProjectBaseService {
     }
 
     @Override
+    @Transactional
     public void updateProjectBase(ProjectBase projectBase,boolean onlyUpdateLiuChengTuDataLogFlag) {
         if(!onlyUpdateLiuChengTuDataLogFlag){
             //目前的userIdList
@@ -122,15 +128,18 @@ public class ProjectBaseServiceImpl implements IProjectBaseService {
             if(needDeleteRelationIdLsit.size()>0){
                 projectBaseAndUserRelationService.deleteProjectBaseAndUserRelationByIdList(needDeleteRelationIdLsit);
             }
+        }else{
+            //只是动了流程图的话，相关节点的关系进行删除、新增
+            insertProjectLiuChengTuNodeListByProjectBase(projectBase,projectBase.getUpdateUserId());
         }
         projectBaseMapper.updateProjectBase(projectBase);
     }
 
     @Override
+    @Transactional
     public void insertProjectBase(ProjectBase projectBase) {
         projectBaseMapper.insertProjectBase(projectBase);
         //新增成功后，会有id返回过来
-        Map<Long,SysUser> sysUserMap=new HashMap<>();
         List<Long> userIdList=projectBase.getCanEditProjectUserIdList();
         if(userIdList!=null && userIdList.size()>0){
             List<ProjectBaseAndUserRelation> relationList=new ArrayList<>();
@@ -147,8 +156,13 @@ public class ProjectBaseServiceImpl implements IProjectBaseService {
     }
 
     @Override
+    @Transactional
     public void deleteProjectBase(ProjectBase projectBase) {
         projectBaseMapper.deleteProjectBase(projectBase);
+        //删除所有的节点
+        projectLiuChengTuNodeService.deleteProjectLiuChengTuNodeByProjectBaseId(projectBase.getId());
+        //删除所有的节点关系人
+        projectLiuChengTuNodeTargetUserRelationService.deleteProjectLiuChengTuNodeTargetUserRelationListByProjectBaseId(projectBase.getId());
     }
 
     //获取某项目中已存在的项目-人员关系
@@ -191,5 +205,90 @@ public class ProjectBaseServiceImpl implements IProjectBaseService {
             }
         }
         return newProjectBaseAndUserRelationList;
+    }
+
+    //新增节点
+    private void insertProjectLiuChengTuNodeListByProjectBase(ProjectBase projectBase,Long operateUserId){
+        //插入之前，先进行删除操作
+        //删除所有的节点
+        projectLiuChengTuNodeService.deleteProjectLiuChengTuNodeByProjectBaseId(projectBase.getId());
+        //删除所有的节点关系人
+        projectLiuChengTuNodeTargetUserRelationService.deleteProjectLiuChengTuNodeTargetUserRelationListByProjectBaseId(projectBase.getId());
+
+        Long projectBaseId=projectBase.getId();
+        String cellsJsonStr=projectBase.getCellsJsonStr();
+        List<ProjectLiuChengTuNode> nodeList=new ArrayList<>();
+        List<ProjectLiuChengTuNodeTargetUserRelation> relationList=new ArrayList<>();
+
+        //10没什么意义，只是区分json字符串
+        if(cellsJsonStr!=null && cellsJsonStr.length()>10){
+            JSONArray jsonObjectList = JSON.parseArray(cellsJsonStr);
+            for (int i = 0; i < jsonObjectList.size(); i++) {
+                JSONObject jsonObject=jsonObjectList.getJSONObject(i);
+                String shape=jsonObject.getString("shape");
+                //是Node类型，则加入节点啥的
+                if(shape!=null && shape.lastIndexOf("Node")>-1){
+                    String graphNodeId=jsonObject.getString("id");
+                    JSONObject dataJSONObject=jsonObject.getJSONObject("data");
+                    String dataJsonStr=dataJSONObject.toString();
+                    ProjectLiuChengTuNode node=new ProjectLiuChengTuNode();
+                    node.setProjectBaseId(projectBaseId);
+                    node.setDataJsonStr(dataJsonStr);
+                    node.setGraphNodeId(graphNodeId);
+                    node.setUpdateUserId(operateUserId);
+                    node.setStatus(dataJSONObject.getInteger("status"));
+                    nodeList.add(node);
+                }
+            }
+            //执行新增操作
+            projectLiuChengTuNodeService.insertProjectLiuChengTuNodeList(nodeList);
+            //再执行具体的关系人
+            for(ProjectLiuChengTuNode node:nodeList){
+                JSONObject dataJsonObject=JSONObject.parseObject(node.getDataJsonStr());
+                if(dataJsonObject!=null  && dataJsonObject.containsKey("chargeUserIdList")){
+                    List<Long> chargeUserIdList=dataJsonObject.getJSONArray("chargeUserIdList").toJavaList(Long.class);
+                    if(chargeUserIdList!=null && chargeUserIdList.size()>0){
+                        for(Long chargeUserId:chargeUserIdList){
+                            ProjectLiuChengTuNodeTargetUserRelation relation=new ProjectLiuChengTuNodeTargetUserRelation();
+                            relation.setProjectBaseId(projectBaseId);
+                            relation.setNodeId(node.getId());
+                            relation.setChargeUserId(chargeUserId);
+                            relation.setUpdateUserId(operateUserId);
+                            relationList.add(relation);
+                        }
+                    }
+                }
+            }
+            if(relationList.size()>0){
+                projectLiuChengTuNodeTargetUserRelationService.insertProjectLiuChengTuNodeTargetUserRelationList(relationList);
+            }
+        }
+    }
+
+    //补充项目流程图节点关系
+    private void supplyProjectLiuChengTuTargetUserRelation(List<ProjectBase> projectBaseList){
+        List<Long> projectBaseIdList=new ArrayList<>();
+        for(ProjectBase projectBase:projectBaseList){
+            projectBaseIdList.add(projectBase.getId());
+        }
+        if(projectBaseIdList.size()>0){
+            QueryProjectLiuChengTuNodeTargetUserRelationParam param=new QueryProjectLiuChengTuNodeTargetUserRelationParam();
+            param.setProjectBaseIdList(projectBaseIdList);
+            List<ProjectLiuChengTuNodeTargetUserRelation> relationList=projectLiuChengTuNodeTargetUserRelationService.selectProjectLiuChengTuNodeTargetUserRelationList(param);
+            Map<Long,List<ProjectLiuChengTuNodeTargetUserRelation>> projectBaseIdTargetRelationListMap=new HashMap<>();
+            for(ProjectLiuChengTuNodeTargetUserRelation relation:relationList){
+                List<ProjectLiuChengTuNodeTargetUserRelation> targetRelationList=projectBaseIdTargetRelationListMap.get(relation.getProjectBaseId());
+                if(targetRelationList==null){
+                    targetRelationList=new ArrayList<>();
+                }
+                targetRelationList.add(relation);
+                projectBaseIdTargetRelationListMap.put(relation.getProjectBaseId(), targetRelationList);
+            }
+            //便利项目
+            for(ProjectBase projectBase:projectBaseList){
+                Long curProjectBaseId=projectBase.getId();
+                projectBase.setRelationList(projectBaseIdTargetRelationListMap.get(curProjectBaseId));
+            }
+        }
     }
 }

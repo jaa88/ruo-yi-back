@@ -90,9 +90,18 @@ public class ProjectLiuChengTuController extends BaseController
             projectBase.setId(log.getProjectBaseId());
             projectBase.setCurrentLiuChengTuDataLogId(log.getId());
             projectBase.setUpdateUserId(userId);
+            projectBase.setCellsJsonStr(log.getCurrentCellsJsonStr());
             projectBaseService.updateProjectBase(projectBase,true);
         }
         return CommonResult.success(null);
+    }
+
+
+    private void insertOrUpdateLiuChengTuNodeTargetChargeUserIdRelation(ProjectLiuChengTuDataLog log){
+        if(log.getProjectBaseId()!=null){
+            //删除所有的node关系
+
+        }
     }
 
     /**
