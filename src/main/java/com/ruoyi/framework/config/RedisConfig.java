@@ -14,11 +14,11 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  * 
  * @author ruoyi
  */
-@Configuration
-@EnableCaching
+/*@Configuration
+@EnableCaching*/
 public class RedisConfig extends CachingConfigurerSupport
 {
-    @Bean
+    /*@Bean
     @SuppressWarnings(value = { "unchecked", "rawtypes" })
     public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory connectionFactory)
     {
@@ -48,9 +48,9 @@ public class RedisConfig extends CachingConfigurerSupport
         return redisScript;
     }
 
-    /**
+    *//**
      * 限流脚本
-     */
+     *//*
     private String limitScriptText()
     {
         return "local key = KEYS[1]\n" +
@@ -65,5 +65,5 @@ public class RedisConfig extends CachingConfigurerSupport
                 "    redis.call('expire', key, time)\n" +
                 "end\n" +
                 "return tonumber(current);";
-    }
+    }*/
 }

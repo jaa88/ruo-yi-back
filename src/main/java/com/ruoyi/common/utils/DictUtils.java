@@ -2,6 +2,8 @@ package com.ruoyi.common.utils;
 
 import java.util.Collection;
 import java.util.List;
+
+import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.utils.spring.SpringUtils;
@@ -39,7 +41,7 @@ public class DictUtils
      */
     public static List<SysDictData> getDictCache(String key)
     {
-        JSONArray arrayCache = SpringUtils.getBean(RedisCache.class).getCacheObject(getCacheKey(key));
+        JSONArray arrayCache = JSONArray.parseArray(JSON.toJSONString(SpringUtils.getBean(RedisCache.class).getCacheObject(getCacheKey(key))));
         if (StringUtils.isNotNull(arrayCache))
         {
             return arrayCache.toList(SysDictData.class);
