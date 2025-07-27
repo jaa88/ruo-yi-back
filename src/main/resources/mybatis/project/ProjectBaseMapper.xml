@@ -14,6 +14,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateTime"    column="update_time"    />
         <result property="remark"    column="remark"    />
         <result property="deleteFlag"    column="delete_flag"    />
+        <result property="contentsSetStr"    column="contents_set_str"    />
     </resultMap>
 
     <select id="selectProjectBaseCount" parameterType="com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectBaseParam" resultType="int">
@@ -33,6 +34,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="projectName != null and  projectName !=''">
                 and project_name like CONCAT('%',#{projectName},'%')
             </if>
+
+            <if test="projectBaseId != null and  projectBaseId !=0 ">
+                and id=#{projectBaseId}
+            </if>
         </where>
         order by  id asc
         limit #{ pageSize}  offset  #{startIndex}
@@ -49,6 +54,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <if test="remark!=null">
             remark=#{remark},
         </if>
+        <if test="contentsSetStr!=null">
+            contents_set_str=#{contentsSetStr},
+        </if>
         update_user_id=#{updateUserId},
         update_time=now()
         where id=#{id}
@@ -57,10 +65,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <insert id="insertProjectBase" parameterType="com.ruoyi.project.projectmanage.domain.ProjectBase" useGeneratedKeys="true" keyProperty="id">
         insert into project_base (
          project_name, current_liu_cheng_tu_data_log_id, create_time,
-         project_charge_user_id, update_user_id, update_time,remark)
+         project_charge_user_id, update_user_id, update_time,remark,contents_set_str)
         VALUES
         (#{projectName},#{currentLiuChengTuDataLogId},now(),
-         #{projectChargeUserId}, #{updateUserId}, now(),#{remark})
+         #{projectChargeUserId}, #{updateUserId}, now(),#{remark},#{contentsSetStr})
     </insert>
 
     <update id="deleteProjectBase" parameterType="com.ruoyi.project.projectmanage.domain.ProjectBase">

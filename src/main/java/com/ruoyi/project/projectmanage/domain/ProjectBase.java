@@ -23,6 +23,16 @@ public class ProjectBase {
     private List<SysUser> canEditProjectUserList;
     //节点关系
     private List<ProjectLiuChengTuNodeTargetUserRelation> relationList;
+    //目录配置
+    private String contentsSetStr;
+
+    public String getContentsSetStr() {
+        return contentsSetStr;
+    }
+
+    public void setContentsSetStr(String contentsSetStr) {
+        this.contentsSetStr = contentsSetStr;
+    }
 
     public List<ProjectLiuChengTuNodeTargetUserRelation> getRelationList() {
         return relationList;
