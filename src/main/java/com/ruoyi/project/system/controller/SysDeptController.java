@@ -1,6 +1,9 @@
 package com.ruoyi.project.system.controller;
 
 import java.util.List;
+
+import com.ruoyi.common.api.CommonResult;
+import com.ruoyi.project.system.domain.SysUser;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -128,5 +131,15 @@ public class SysDeptController extends BaseController
         }
         deptService.checkDeptDataScope(deptId);
         return toAjax(deptService.deleteDeptById(deptId));
+    }
+
+    /**
+     * 获取所有部门信息
+     */
+    @GetMapping("/selectAllDeptList")
+    public CommonResult selectAllDeptList()
+    {
+        List<SysDept> sysDeptList=deptService.selectAllDeptList();
+        return CommonResult.success(sysDeptList);
     }
 }

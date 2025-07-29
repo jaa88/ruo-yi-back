@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.projectmanage.mapper.ProjectBaseAndDeptRelationMapper">
+    
+    <resultMap type="com.ruoyi.project.projectmanage.domain.ProjectBaseAndDeptRelation" id="tempMap">
+    	<id     property="id"      column="id"      />
+        <result property="projectBaseId"    column="project_base_id"    />
+        <result property="deptId"     column="dept_id"     />
+        <result property="createTime"   column="create_time"   />
+        <result property="createUserId"    column="create_user_id"    />
+        <result property="updateUserId"      column="update_user_id"      />
+        <result property="updateTime"    column="update_time"    />
+        <result property="deleteFlag"    column="delete_flag"    />
+    </resultMap>
+
+    <insert id="insertProjectBaseAndDeptRelationList" parameterType="list">
+        insert into project_base_and_dept_relation(
+        project_base_id, dept_id, create_time,
+        create_user_id, update_time, update_user_id
+        )
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.projectBaseId},#{item.deptId},now(),
+            #{item.createUserId}, now(), #{item.updateUserId})
+        </foreach>
+    </insert>
+
+    <select id="selectProjectBaseAndDeptRelationList" parameterType="com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectBaseAndDeptRelationParam" resultMap="tempMap">
+        SELECT * from project_base_and_dept_relation
+        <where>
+            delete_flag=0
+            <if test="userIdList != null and  userIdList.size()>0">
+                and  dept_id in
+                <foreach collection="userIdList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="projectBaseIdList != null and  projectBaseIdList.size()>0">
+                and  project_base_id in
+                <foreach collection="projectBaseIdList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        order by  id asc
+    </select>
+
+    <update id="deleteProjectBaseAndDeptRelationByIdList" parameterType="list">
+        <foreach collection="list" item="item" separator=";">
+            update project_base_and_dept_relation set
+            delete_flag=1 where id=#{item}
+        </foreach>
+    </update>
+
+</mapper>

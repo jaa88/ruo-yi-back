@@ -1,5 +1,6 @@
 package com.ruoyi.project.projectmanage.domain;
 
+import com.ruoyi.project.system.domain.SysDept;
 import com.ruoyi.project.system.domain.SysUser;
 
 import java.util.Date;
@@ -19,8 +20,8 @@ public class ProjectBase {
     private String remark;
     private Integer deleteFlag;
     private String cellsJsonStr;
-    private List<Long> canEditProjectUserIdList;
-    private List<SysUser> canEditProjectUserList;
+    private List<Long> canEditProjectDeptIdList;
+    private List<SysDept> canEditProjectDeptList;
     //节点关系
     private List<ProjectLiuChengTuNodeTargetUserRelation> relationList;
     //目录配置
@@ -42,20 +43,20 @@ public class ProjectBase {
         this.relationList = relationList;
     }
 
-    public List<Long> getCanEditProjectUserIdList() {
-        return canEditProjectUserIdList;
+    public List<Long> getCanEditProjectDeptIdList() {
+        return canEditProjectDeptIdList;
     }
 
-    public void setCanEditProjectUserIdList(List<Long> canEditProjectUserIdList) {
-        this.canEditProjectUserIdList = canEditProjectUserIdList;
+    public void setCanEditProjectDeptIdList(List<Long> canEditProjectDeptIdList) {
+        this.canEditProjectDeptIdList = canEditProjectDeptIdList;
     }
 
-    public List<SysUser> getCanEditProjectUserList() {
-        return canEditProjectUserList;
+    public List<SysDept> getCanEditProjectDeptList() {
+        return canEditProjectDeptList;
     }
 
-    public void setCanEditProjectUserList(List<SysUser> canEditProjectUserList) {
-        this.canEditProjectUserList = canEditProjectUserList;
+    public void setCanEditProjectDeptList(List<SysDept> canEditProjectDeptList) {
+        this.canEditProjectDeptList = canEditProjectDeptList;
     }
 
     public String getCellsJsonStr() {

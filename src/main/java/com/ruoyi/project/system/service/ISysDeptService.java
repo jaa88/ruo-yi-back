@@ -1,6 +1,8 @@
 package com.ruoyi.project.system.service;
 
 import java.util.List;
+import java.util.Map;
+
 import com.ruoyi.framework.web.domain.TreeSelect;
 import com.ruoyi.project.system.domain.SysDept;
 
@@ -121,4 +123,9 @@ public interface ISysDeptService
      * @return 结果
      */
     public int deleteDeptById(Long deptId);
+
+    public List<SysDept> selectAllDeptList();
+
+    public Map<Long,SysDept> selectAllDeptMap();
+
 }

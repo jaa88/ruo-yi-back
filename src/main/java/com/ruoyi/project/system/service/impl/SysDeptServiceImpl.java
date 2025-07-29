@@ -1,8 +1,6 @@
 package com.ruoyi.project.system.service.impl;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -334,5 +332,20 @@ public class SysDeptServiceImpl implements ISysDeptService
     private boolean hasChild(List<SysDept> list, SysDept t)
     {
         return getChildList(list, t).size() > 0 ? true : false;
+    }
+
+    @Override
+    public List<SysDept> selectAllDeptList() {
+        return deptMapper.selectAllDeptList();
+    }
+
+    @Override
+    public Map<Long, SysDept> selectAllDeptMap() {
+        List<SysDept> sysDeptList=deptMapper.selectAllDeptList();
+        Map<Long,SysDept> sysDeptMap=new HashMap<>();
+        for(SysDept sysDept:sysDeptList){
+            sysDeptMap.put(sysDept.getDeptId(),sysDept);
+        }
+        return sysDeptMap;
     }
 }
