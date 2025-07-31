@@ -9,11 +9,14 @@ import com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectBaseP
 import com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectLiuChengTuDataLogParam;
 import com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectLiuChengTuTemplateParam;
 import com.ruoyi.project.projectmanage.service.IProjectBaseService;
+import com.ruoyi.project.projectmanage.service.IProjectLiuChengTuNodeService;
 import com.ruoyi.project.projectmanage.service.IProjectLiuChengTuService;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -29,7 +32,6 @@ public class ProjectLiuChengTuController extends BaseController
     private IProjectLiuChengTuService projectLiuChengTuService;
     @Resource
     private IProjectBaseService projectBaseService;
-
     /**
      * 获取模板列表
      */
@@ -110,11 +112,21 @@ public class ProjectLiuChengTuController extends BaseController
     //@PreAuthorize("@ss.hasPermi('project:base:list')")
     @RequestMapping(value = "/insertProjectTemplate", method = RequestMethod.POST)
     @ResponseBody
-    public CommonResult insertProjectTemplate(@RequestBody ProjectLiuChengTuTemplate projectLiuChengTuTemplate)
-    {
+    public CommonResult insertProjectTemplate(@RequestBody ProjectLiuChengTuTemplate projectLiuChengTuTemplate) {
+        //先存储一下流程图数据
+        ProjectLiuChengTuDataLog log=new ProjectLiuChengTuDataLog();
+        log.setCurrentCellsJsonStr(projectLiuChengTuTemplate.getCellsJsonStr());
+        log.setOperateUserId(getUserId());
+        log.setOperateTime(new Date());
+        projectLiuChengTuService.insertProjectLiuChengTuDataLog(log);
+        //然后存储模板
+        projectLiuChengTuTemplate.setCurrentLiuChengTuDataLogId(log.getId());
         projectLiuChengTuTemplate.setUpdateUserId(getUserId());
         projectLiuChengTuTemplate.setCreateUserId(getUserId());
         projectLiuChengTuService.insertProjectTemplate(projectLiuChengTuTemplate);
+        //更新数据中的模板id
+        log.setProjectLiuChengTuTemplateId(projectLiuChengTuTemplate.getId());
+        projectLiuChengTuService.updateProjectLiuChengTuDataLog(log);
         return CommonResult.success(null);
     }
 

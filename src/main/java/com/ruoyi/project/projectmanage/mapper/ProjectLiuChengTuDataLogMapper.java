@@ -21,4 +21,6 @@ public interface ProjectLiuChengTuDataLogMapper
     ProjectLiuChengTuDataLog selectProjectLiuChengTuDataLogById(Long id);
 
     List<ProjectLiuChengTuDataLog> selectProjectLiuChengTuDataLogListByIdList(@Param("idList") List<Long> idList);
+
+    public void updateProjectLiuChengTuDataLog(ProjectLiuChengTuDataLog log);
 }

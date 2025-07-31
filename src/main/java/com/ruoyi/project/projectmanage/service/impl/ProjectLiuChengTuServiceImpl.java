@@ -108,4 +108,9 @@ public class ProjectLiuChengTuServiceImpl implements IProjectLiuChengTuService {
         }
         return map;
     }
+
+    @Override
+    public void updateProjectLiuChengTuDataLog(ProjectLiuChengTuDataLog log) {
+        projectLiuChengTuDataLogMapper.updateProjectLiuChengTuDataLog(log);
+    }
 }

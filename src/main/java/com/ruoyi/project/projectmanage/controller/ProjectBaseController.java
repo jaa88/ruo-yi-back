@@ -3,8 +3,10 @@ package com.ruoyi.project.projectmanage.controller;
 import com.ruoyi.common.api.CommonResult;
 import com.ruoyi.framework.web.controller.BaseController;
 import com.ruoyi.project.projectmanage.domain.ProjectBase;
+import com.ruoyi.project.projectmanage.domain.ProjectLiuChengTuDataLog;
 import com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectBaseParam;
 import com.ruoyi.project.projectmanage.service.IProjectBaseService;
+import com.ruoyi.project.projectmanage.service.IProjectLiuChengTuService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +26,8 @@ public class ProjectBaseController extends BaseController
 {
     @Resource
     private IProjectBaseService projectBaseService;
+    @Resource
+    private IProjectLiuChengTuService projectLiuChengTuService;
 
     /**
      * 获取项目列表
@@ -51,7 +55,21 @@ public class ProjectBaseController extends BaseController
     public CommonResult insertProjectBase(@RequestBody ProjectBase projectBase)
     {
         projectBase.setUpdateUserId(getUserId());
+        ProjectLiuChengTuDataLog log=new ProjectLiuChengTuDataLog();
+        //如果有cellsJsonStr，那么认为是初始选择了流程图的
+        if(projectBase.getCellsJsonStr()!=null && projectBase.getCellsJsonStr().length()>0){
+
+            log.setCurrentCellsJsonStr(projectBase.getCellsJsonStr());
+            log.setOperateUserId(getUserId());
+            projectLiuChengTuService.insertProjectLiuChengTuDataLog(log);
+            projectBase.setCurrentLiuChengTuDataLogId(log.getId());
+        }
         projectBaseService.insertProjectBase(projectBase);
+        //如果有cellsJsonStr，那么认为是初始选择了流程图的       反过来补充流程图datlog 对应的projectBaseId
+        if(projectBase.getCellsJsonStr()!=null && projectBase.getCellsJsonStr().length()>0){
+            log.setProjectBaseId(projectBase.getId());
+            projectLiuChengTuService.updateProjectLiuChengTuDataLog(log);
+        }
         return CommonResult.success(null);
     }
 

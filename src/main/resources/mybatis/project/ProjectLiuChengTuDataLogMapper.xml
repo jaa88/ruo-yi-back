@@ -72,4 +72,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          #{operateUserId}, now(), #{projectLiuChengTuTemplateId})
     </insert>
 
+    <update id="updateProjectLiuChengTuDataLog" parameterType="com.ruoyi.project.projectmanage.domain.ProjectLiuChengTuDataLog">
+        update project_liu_cheng_tu_data_log set
+        project_liu_cheng_tu_template_id=#{projectLiuChengTuTemplateId},
+        project_base_id=#{projectBaseId},
+        operate_user_id=#{operateUserId},
+        operate_time=now()
+        where id=#{id}
+    </update>
 </mapper>

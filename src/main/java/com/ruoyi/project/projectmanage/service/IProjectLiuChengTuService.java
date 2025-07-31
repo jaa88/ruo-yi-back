@@ -24,6 +24,9 @@ public interface IProjectLiuChengTuService
     public List<ProjectLiuChengTuDataLog> selectProjectLiuChengTuDataLogList(QueryProjectLiuChengTuDataLogParam param);
 
     void insertProjectLiuChengTuDataLog(ProjectLiuChengTuDataLog log);
+
+    void updateProjectLiuChengTuDataLog(ProjectLiuChengTuDataLog log);
+
     //新增模板
     void insertProjectTemplate(ProjectLiuChengTuTemplate projectLiuChengTuTemplate);
     //更新流程模板
