@@ -194,14 +194,16 @@ public class ProjectBaseServiceImpl implements IProjectBaseService {
     //获取新增的权限
     private List<ProjectBaseAndDeptRelation> getNewProjectBaseAndDeptRelationList(List<Long> curCanEditProjectDeptIdList,Set<Long> dbCanEditProjectUserIdSet,Long curUserId,Long projectBaseId){
         List<ProjectBaseAndDeptRelation> newProjectBaseAndDeptRelationList=new ArrayList<>();
-        for(Long deptId:curCanEditProjectDeptIdList){
-            if(!dbCanEditProjectUserIdSet.contains(deptId)){
-                ProjectBaseAndDeptRelation relation=new ProjectBaseAndDeptRelation();
-                relation.setUpdateUserId(curUserId);
-                relation.setCreateUserId(curUserId);
-                relation.setProjectBaseId(projectBaseId);
-                relation.setDeptId(deptId);
-                newProjectBaseAndDeptRelationList.add(relation);
+        if(curCanEditProjectDeptIdList!=null){
+            for(Long deptId:curCanEditProjectDeptIdList){
+                if(!dbCanEditProjectUserIdSet.contains(deptId)){
+                    ProjectBaseAndDeptRelation relation=new ProjectBaseAndDeptRelation();
+                    relation.setUpdateUserId(curUserId);
+                    relation.setCreateUserId(curUserId);
+                    relation.setProjectBaseId(projectBaseId);
+                    relation.setDeptId(deptId);
+                    newProjectBaseAndDeptRelationList.add(relation);
+                }
             }
         }
         return newProjectBaseAndDeptRelationList;

@@ -15,6 +15,20 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="remark"    column="remark"    />
         <result property="deleteFlag"    column="delete_flag"    />
         <result property="contentsSetStr"    column="contents_set_str"    />
+        <result property="projectMainImagePathAndName"    column="project_main_image_path_and_name"    />
+
+        <result property="xiangMuDaiMa"    column="xiang_mu_dai_ma"    />
+        <result property="xiangMuDiZhi"     column="xiang_mu_di_zhi"     />
+        <result property="xiangMuLeiXing"   column="xiang_mu_lei_xing"   />
+        <result property="jianSheXingZhi"    column="jian_she_xing_zhi"    />
+        <result property="zongTouZi"      column="zong_tou_zi"      />
+        <result property="niKaiGongRiQi"    column="ni_kai_gong_ri_qi"    />
+        <result property="niWanGongRiQi"    column="ni_wan_gong_ri_qi"    />
+        <result property="jianSheDanWei"    column="jian_she_dan_wei"    />
+        <result property="xiangMuFuZeRen"    column="xiang_mu_fu_ze_ren"    />
+        <result property="lianXiFangShi"    column="lian_xi_fang_shi"    />
+        <result property="zhuYaoJianSheNeiRong"    column="zhu_yao_jian_she_nei_rong"    />
+        <result property="niXinZenYongDiQingKuang"    column="ni_xin_zen_yong_di_qing_kuang"    />
     </resultMap>
 
     <select id="selectProjectBaseCount" parameterType="com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectBaseParam" resultType="int">
@@ -57,6 +71,45 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <if test="contentsSetStr!=null">
             contents_set_str=#{contentsSetStr},
         </if>
+        <if test="projectMainImagePathAndName!=null and projectMainImagePathAndName!=''">
+            project_main_image_path_and_name=#{projectMainImagePathAndName},
+        </if>
+        <if test="xiangMuDaiMa!=null">
+            xiang_mu_dai_ma=#{xiangMuDaiMa},
+        </if>
+        <if test="xiangMuDiZhi!=null">
+            xiang_mu_di_zhi=#{xiangMuDiZhi},
+        </if>
+        <if test="xiangMuLeiXing!=null">
+            xiang_mu_lei_xing=#{xiangMuLeiXing},
+        </if>
+        <if test="jianSheXingZhi!=null">
+            jian_she_xing_zhi=#{jianSheXingZhi},
+        </if>
+        <if test="zongTouZi!=null">
+            zong_tou_zi=#{zongTouZi},
+        </if>
+        <if test="niKaiGongRiQi!=null">
+            ni_kai_gong_ri_qi=#{niKaiGongRiQi},
+        </if>
+        <if test="niWanGongRiQi!=null">
+            ni_wan_gong_ri_qi=#{niWanGongRiQi},
+        </if>
+        <if test="jianSheDanWei!=null">
+            jian_she_dan_wei=#{jianSheDanWei},
+        </if>
+        <if test="xiangMuFuZeRen!=null">
+            xiang_mu_fu_ze_ren=#{xiangMuFuZeRen},
+        </if>
+        <if test="lianXiFangShi!=null">
+            lian_xi_fang_shi=#{lianXiFangShi},
+        </if>
+        <if test="zhuYaoJianSheNeiRong!=null">
+            zhu_yao_jian_she_nei_rong=#{zhuYaoJianSheNeiRong},
+        </if>
+        <if test="niXinZenYongDiQingKuang!=null">
+            ni_xin_zen_yong_di_qing_kuang=#{niXinZenYongDiQingKuang},
+        </if>
         update_user_id=#{updateUserId},
         update_time=now()
         where id=#{id}
@@ -65,10 +118,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <insert id="insertProjectBase" parameterType="com.ruoyi.project.projectmanage.domain.ProjectBase" useGeneratedKeys="true" keyProperty="id">
         insert into project_base (
          project_name, current_liu_cheng_tu_data_log_id, create_time,
-         project_charge_user_id, update_user_id, update_time,remark,contents_set_str)
+         project_charge_user_id, update_user_id, update_time,remark,contents_set_str,project_main_image_path_and_name,
+         xiang_mu_dai_ma, xiang_mu_di_zhi, xiang_mu_lei_xing, jian_she_xing_zhi, zong_tou_zi,
+         ni_kai_gong_ri_qi, ni_wan_gong_ri_qi, jian_she_dan_wei, xiang_mu_fu_ze_ren, lian_xi_fang_shi,
+         zhu_yao_jian_she_nei_rong, ni_xin_zen_yong_di_qing_kuang)
         VALUES
         (#{projectName},#{currentLiuChengTuDataLogId},now(),
-         #{projectChargeUserId}, #{updateUserId}, now(),#{remark},#{contentsSetStr})
+         #{projectChargeUserId}, #{updateUserId}, now(),#{remark},#{contentsSetStr},#{projectMainImagePathAndName},
+         #{xiangMuDaiMa}, #{xiangMuDiZhi},#{xiangMuLeiXing}, #{jianSheXingZhi},#{zongTouZi},
+          #{niKaiGongRiQi},#{niWanGongRiQi},#{jianSheDanWei}, #{xiangMuFuZeRen},#{lianXiFangShi},
+          #{zhuYaoJianSheNeiRong},#{niXinZenYongDiQingKuang}
+         )
     </insert>
 
     <update id="deleteProjectBase" parameterType="com.ruoyi.project.projectmanage.domain.ProjectBase">

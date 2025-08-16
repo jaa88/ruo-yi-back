@@ -3,6 +3,8 @@ package com.ruoyi.framework.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+
 /**
  * 读取项目相关配置
  * 
@@ -59,6 +61,12 @@ public class RuoYiConfig
 
     public static String getProfile()
     {
+        String dockerBegin="/var/local";
+        //判断var目录是否存在，如果存在就是服务器
+        File folder=new File(dockerBegin);
+        if(folder.exists() && folder.isDirectory()){
+            return dockerBegin;
+        }
         return profile;
     }
 

@@ -26,6 +26,125 @@ public class ProjectBase {
     private List<ProjectLiuChengTuNodeTargetUserRelation> relationList;
     //目录配置
     private String contentsSetStr;
+    //项目主图
+    private String projectMainImagePathAndName;
+
+    private String xiangMuDaiMa;
+    private String xiangMuDiZhi;
+    private String xiangMuLeiXing;
+    private String jianSheXingZhi;
+    private String zongTouZi;
+    private String niKaiGongRiQi;
+    private String niWanGongRiQi;
+    private String jianSheDanWei;
+    private String xiangMuFuZeRen;
+    private String lianXiFangShi;
+    private String zhuYaoJianSheNeiRong;
+    private String niXinZenYongDiQingKuang;
+
+    public String getZhuYaoJianSheNeiRong() {
+        return zhuYaoJianSheNeiRong;
+    }
+
+    public void setZhuYaoJianSheNeiRong(String zhuYaoJianSheNeiRong) {
+        this.zhuYaoJianSheNeiRong = zhuYaoJianSheNeiRong;
+    }
+
+    public String getNiXinZenYongDiQingKuang() {
+        return niXinZenYongDiQingKuang;
+    }
+
+    public void setNiXinZenYongDiQingKuang(String niXinZenYongDiQingKuang) {
+        this.niXinZenYongDiQingKuang = niXinZenYongDiQingKuang;
+    }
+
+    public String getXiangMuDaiMa() {
+        return xiangMuDaiMa;
+    }
+
+    public void setXiangMuDaiMa(String xiangMuDaiMa) {
+        this.xiangMuDaiMa = xiangMuDaiMa;
+    }
+
+    public String getXiangMuDiZhi() {
+        return xiangMuDiZhi;
+    }
+
+    public void setXiangMuDiZhi(String xiangMuDiZhi) {
+        this.xiangMuDiZhi = xiangMuDiZhi;
+    }
+
+    public String getXiangMuLeiXing() {
+        return xiangMuLeiXing;
+    }
+
+    public void setXiangMuLeiXing(String xiangMuLeiXing) {
+        this.xiangMuLeiXing = xiangMuLeiXing;
+    }
+
+    public String getJianSheXingZhi() {
+        return jianSheXingZhi;
+    }
+
+    public void setJianSheXingZhi(String jianSheXingZhi) {
+        this.jianSheXingZhi = jianSheXingZhi;
+    }
+
+    public String getZongTouZi() {
+        return zongTouZi;
+    }
+
+    public void setZongTouZi(String zongTouZi) {
+        this.zongTouZi = zongTouZi;
+    }
+
+    public String getNiKaiGongRiQi() {
+        return niKaiGongRiQi;
+    }
+
+    public void setNiKaiGongRiQi(String niKaiGongRiQi) {
+        this.niKaiGongRiQi = niKaiGongRiQi;
+    }
+
+    public String getNiWanGongRiQi() {
+        return niWanGongRiQi;
+    }
+
+    public void setNiWanGongRiQi(String niWanGongRiQi) {
+        this.niWanGongRiQi = niWanGongRiQi;
+    }
+
+    public String getJianSheDanWei() {
+        return jianSheDanWei;
+    }
+
+    public void setJianSheDanWei(String jianSheDanWei) {
+        this.jianSheDanWei = jianSheDanWei;
+    }
+
+    public String getXiangMuFuZeRen() {
+        return xiangMuFuZeRen;
+    }
+
+    public void setXiangMuFuZeRen(String xiangMuFuZeRen) {
+        this.xiangMuFuZeRen = xiangMuFuZeRen;
+    }
+
+    public String getLianXiFangShi() {
+        return lianXiFangShi;
+    }
+
+    public void setLianXiFangShi(String lianXiFangShi) {
+        this.lianXiFangShi = lianXiFangShi;
+    }
+
+    public String getProjectMainImagePathAndName() {
+        return projectMainImagePathAndName;
+    }
+
+    public void setProjectMainImagePathAndName(String projectMainImagePathAndName) {
+        this.projectMainImagePathAndName = projectMainImagePathAndName;
+    }
 
     public String getContentsSetStr() {
         return contentsSetStr;
