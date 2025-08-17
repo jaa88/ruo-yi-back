@@ -17,9 +17,37 @@ public class ProjectLiuChengTuNodeTargetDeptRelation {
     private Date updateTime;
     //补充对应项目名称、任务名称
     private String projectName;
-    private String taskName;
     private String dataJsonStr;
+    private String deptName;
+    //节点内包含的的信息
     private Integer status;
+    private String taskName;
+    private Date startTime;
+    private Date expectedEndTime;
+
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
+    public Date getExpectedEndTime() {
+        return expectedEndTime;
+    }
+
+    public void setExpectedEndTime(Date expectedEndTime) {
+        this.expectedEndTime = expectedEndTime;
+    }
+
+    public String getDeptName() {
+        return deptName;
+    }
+
+    public void setDeptName(String deptName) {
+        this.deptName = deptName;
+    }
 
     public Integer getStatus() {
         return status;

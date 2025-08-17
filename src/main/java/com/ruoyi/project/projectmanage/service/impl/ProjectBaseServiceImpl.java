@@ -12,7 +12,7 @@ import com.ruoyi.framework.redis.RedisCache;
 import com.ruoyi.project.projectmanage.domain.*;
 import com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectBaseAndDeptRelationParam;
 import com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectBaseParam;
-import com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectLiuChengTuNodeTargetUserRelationParam;
+import com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectLiuChengTuNodeTargetDeptRelationParam;
 import com.ruoyi.project.projectmanage.mapper.ProjectBaseMapper;
 import com.ruoyi.project.projectmanage.service.*;
 import com.ruoyi.project.system.domain.SysConfig;
@@ -20,12 +20,14 @@ import com.ruoyi.project.system.domain.SysDept;
 import com.ruoyi.project.system.mapper.SysConfigMapper;
 import com.ruoyi.project.system.service.ISysConfigService;
 import com.ruoyi.project.system.service.ISysDeptService;
+import com.ruoyi.project.tool.gen.util.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -47,7 +49,7 @@ public class ProjectBaseServiceImpl implements IProjectBaseService {
     @Resource
     private IProjectLiuChengTuNodeService projectLiuChengTuNodeService;
     @Resource
-    private IProjectLiuChengTuNodeTargetUserRelationService projectLiuChengTuNodeTargetUserRelationService;
+    private IProjectLiuChengTuNodeTargetDeptRelationService projectLiuChengTuNodeTargetDeptRelationService;
 
     @Override
     public int selectProjectBaseCount(QueryProjectBaseParam param) {
@@ -105,17 +107,22 @@ public class ProjectBaseServiceImpl implements IProjectBaseService {
                 projectBase.setCanEditProjectDeptIdList(projectBaseIdTargetDeptIdListMap.get(projectBaseId));
             }
         }
+        //补充流程图中的节点与部门之间的关系，目前没有用到 0816
+        supplyProjectLiuChengTuTargetDeptRelation(list);
         return list;
     }
 
     @Override
     @Transactional
     public void updateProjectBase(ProjectBase projectBase,boolean onlyUpdateLiuChengTuDataLogFlag) {
-        if(!onlyUpdateLiuChengTuDataLogFlag){
+        if(onlyUpdateLiuChengTuDataLogFlag){
+            //只是动了流程图的话，相关节点的关系进行删除、新增
+            insertProjectLiuChengTuNodeListByProjectBase(projectBase,projectBase.getUpdateUserId());
+        }else{
             //目前的deptIdList
             List<Long> curCanEditProjectDeptIdList=projectBase.getCanEditProjectDeptIdList();
-            //获取数据库中的canEditProjectUserIdList
-            Set<Long> dbCanEditProjectUserIdSet=getDbCanEditProjectUserIdSet(projectBase.getId());
+            //获取数据库中的canEditProjectDeptIdList
+            Set<Long> dbCanEditProjectUserIdSet=getDbCanEditProjectDeptIdSet(projectBase.getId());
             //需要新增的权限
             List<ProjectBaseAndDeptRelation> newRelationList=getNewProjectBaseAndDeptRelationList(curCanEditProjectDeptIdList,dbCanEditProjectUserIdSet,projectBase.getUpdateUserId(),projectBase.getId());
             //需要删除的权限
@@ -128,9 +135,6 @@ public class ProjectBaseServiceImpl implements IProjectBaseService {
             if(needDeleteRelationIdLsit.size()>0){
                 projectBaseAndDeptRelationService.deleteProjectBaseAndDeptRelationByIdList(needDeleteRelationIdLsit);
             }
-        }else{
-            //只是动了流程图的话，相关节点的关系进行删除、新增
-            insertProjectLiuChengTuNodeListByProjectBase(projectBase,projectBase.getUpdateUserId());
         }
         projectBaseMapper.updateProjectBase(projectBase);
     }
@@ -161,12 +165,12 @@ public class ProjectBaseServiceImpl implements IProjectBaseService {
         projectBaseMapper.deleteProjectBase(projectBase);
         //删除所有的节点
         projectLiuChengTuNodeService.deleteProjectLiuChengTuNodeByProjectBaseId(projectBase.getId());
-        //删除所有的节点关系人
-        projectLiuChengTuNodeTargetUserRelationService.deleteProjectLiuChengTuNodeTargetUserRelationListByProjectBaseId(projectBase.getId());
+        //删除所有的节点关系部门
+        projectLiuChengTuNodeTargetDeptRelationService.deleteProjectLiuChengTuNodeTargetDeptRelationListByProjectBaseId(projectBase.getId());
     }
 
-    //获取某项目中已存在的项目-人员关系
-    private Set<Long> getDbCanEditProjectUserIdSet(Long projectBaseId){
+    //获取某项目中已存在的项目-部门关系
+    private Set<Long> getDbCanEditProjectDeptIdSet(Long projectBaseId){
         QueryProjectBaseAndDeptRelationParam queryProjectBaseAndDeptRelationParam=new QueryProjectBaseAndDeptRelationParam();
         queryProjectBaseAndDeptRelationParam.setProjectBaseIdList(Arrays.asList(projectBaseId));
         List<ProjectBaseAndDeptRelation> relationList=projectBaseAndDeptRelationService.selectProjectBaseAndDeptRelationList(queryProjectBaseAndDeptRelationParam);
@@ -214,72 +218,107 @@ public class ProjectBaseServiceImpl implements IProjectBaseService {
         //插入之前，先进行删除操作
         //删除所有的节点
         projectLiuChengTuNodeService.deleteProjectLiuChengTuNodeByProjectBaseId(projectBase.getId());
-        //删除所有的节点关系人
-        projectLiuChengTuNodeTargetUserRelationService.deleteProjectLiuChengTuNodeTargetUserRelationListByProjectBaseId(projectBase.getId());
-
+        //删除所有的节点与部门之间的关系
+        projectLiuChengTuNodeTargetDeptRelationService.deleteProjectLiuChengTuNodeTargetDeptRelationListByProjectBaseId(projectBase.getId());
         Long projectBaseId=projectBase.getId();
         String cellsJsonStr=projectBase.getCellsJsonStr();
-        List<ProjectLiuChengTuNode> nodeList=new ArrayList<>();
-        List<ProjectLiuChengTuNodeTargetUserRelation> relationList=new ArrayList<>();
-
         //10没什么意义，只是区分json字符串
         if(cellsJsonStr!=null && cellsJsonStr.length()>10){
-            JSONArray jsonObjectList = JSON.parseArray(cellsJsonStr);
-            for (int i = 0; i < jsonObjectList.size(); i++) {
-                JSONObject jsonObject=jsonObjectList.getJSONObject(i);
-                String shape=jsonObject.getString("shape");
-                //是Node类型，则加入节点啥的
-                if(shape!=null && shape.lastIndexOf("Node")>-1){
-                    String graphNodeId=jsonObject.getString("id");
-                    JSONObject dataJSONObject=jsonObject.getJSONObject("data");
-                    String dataJsonStr=dataJSONObject.toString();
-                    ProjectLiuChengTuNode node=new ProjectLiuChengTuNode();
-                    node.setProjectBaseId(projectBaseId);
-                    node.setDataJsonStr(dataJsonStr);
-                    node.setGraphNodeId(graphNodeId);
-                    node.setUpdateUserId(operateUserId);
-                    node.setStatus(dataJSONObject.getInteger("status"));
-                    nodeList.add(node);
-                }
-            }
+            //生成节点信息
+            List<ProjectLiuChengTuNode> nodeList=generateProjectLiuChengTuNodeList(cellsJsonStr,projectBaseId,operateUserId);
             //执行新增操作
-            projectLiuChengTuNodeService.insertProjectLiuChengTuNodeList(nodeList);
-            //再执行具体的关系人
-            for(ProjectLiuChengTuNode node:nodeList){
-                JSONObject dataJsonObject=JSONObject.parseObject(node.getDataJsonStr());
-                if(dataJsonObject!=null  && dataJsonObject.containsKey("chargeUserIdList")){
-                    List<Long> chargeUserIdList=dataJsonObject.getJSONArray("chargeUserIdList").toJavaList(Long.class);
-                    if(chargeUserIdList!=null && chargeUserIdList.size()>0){
-                        for(Long chargeUserId:chargeUserIdList){
-                            ProjectLiuChengTuNodeTargetUserRelation relation=new ProjectLiuChengTuNodeTargetUserRelation();
-                            relation.setProjectBaseId(projectBaseId);
-                            relation.setNodeId(node.getId());
-                            relation.setChargeUserId(chargeUserId);
-                            relation.setUpdateUserId(operateUserId);
-                            relationList.add(relation);
-                        }
-                    }
-                }
+            if(nodeList.size()>0){
+                projectLiuChengTuNodeService.insertProjectLiuChengTuNodeList(nodeList);
             }
+            //再执行具体的关系人
+            List<ProjectLiuChengTuNodeTargetDeptRelation> relationList=generateProjectLiuChengTuNodeTargetDeptRelationList(nodeList,projectBaseId,operateUserId);
             if(relationList.size()>0){
-                projectLiuChengTuNodeTargetUserRelationService.insertProjectLiuChengTuNodeTargetUserRelationList(relationList);
+                projectLiuChengTuNodeTargetDeptRelationService.insertProjectLiuChengTuNodeTargetDeptRelationList(relationList);
             }
         }
     }
 
+    //生成节点信息
+    private List<ProjectLiuChengTuNode> generateProjectLiuChengTuNodeList( String cellsJsonStr,Long projectBaseId,Long operateUserId){
+        List<ProjectLiuChengTuNode> nodeList=new ArrayList<>();
+        JSONArray jsonObjectList = JSON.parseArray(cellsJsonStr);
+        for (int i = 0; i < jsonObjectList.size(); i++) {
+            JSONObject jsonObject=jsonObjectList.getJSONObject(i);
+            String shape=jsonObject.getString("shape");
+            //是Node类型，则加入节点啥的
+            if(shape!=null && shape.lastIndexOf("Node")>-1){
+                String graphNodeId=jsonObject.getString("id");
+                JSONObject dataJSONObject=jsonObject.getJSONObject("data");
+                String dataJsonStr=dataJSONObject.toString();
+                ProjectLiuChengTuNode node=new ProjectLiuChengTuNode();
+                node.setProjectBaseId(projectBaseId);
+                node.setDataJsonStr(dataJsonStr);
+                node.setGraphNodeId(graphNodeId);
+                node.setUpdateUserId(operateUserId);
+                //以下是从dataJsonStr中提取的东西
+                node.setStatus(dataJSONObject.getInteger("status"));
+                node.setTaskName(dataJSONObject.getString("taskName"));
+                //转换开始时间
+                String startTimeStr=dataJSONObject.getString("startTime");
+                if(startTimeStr!=null && !"".equals(startTimeStr)){
+                    try {
+                        node.setStartTime(TimeUtil.geTimeFromStr(startTimeStr,"yyyy-MM-dd"));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                        node.setStartTime(null);
+                    }
+                }
+                //转换预期结束时间
+                String expectedEndTime=dataJSONObject.getString("expectedEndTime");
+                if(expectedEndTime!=null && !"".equals(expectedEndTime)){
+                    try {
+                        node.setExpectedEndTime(TimeUtil.geTimeFromStr(expectedEndTime,"yyyy-MM-dd"));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                        node.setExpectedEndTime(null);
+                    }
+                }
+                nodeList.add(node);
+            }
+        }
+        return nodeList;
+    }
+
+    //生成节点与部门之间的关系
+    private List<ProjectLiuChengTuNodeTargetDeptRelation> generateProjectLiuChengTuNodeTargetDeptRelationList(List<ProjectLiuChengTuNode> nodeList,Long projectBaseId,Long operateUserId){
+        List<ProjectLiuChengTuNodeTargetDeptRelation> relationList=new ArrayList<>();
+        for(ProjectLiuChengTuNode node:nodeList){
+            JSONObject dataJsonObject=JSONObject.parseObject(node.getDataJsonStr());
+            if(dataJsonObject!=null  && dataJsonObject.containsKey("chargeDeptIdList")){
+                List<Long> chargeDeptIdList=dataJsonObject.getJSONArray("chargeDeptIdList").toJavaList(Long.class);
+                if(chargeDeptIdList!=null && chargeDeptIdList.size()>0){
+                    for(Long chargeDeptId:chargeDeptIdList){
+                        ProjectLiuChengTuNodeTargetDeptRelation relation=new ProjectLiuChengTuNodeTargetDeptRelation();
+                        relation.setProjectBaseId(projectBaseId);
+                        relation.setNodeId(node.getId());
+                        relation.setChargeDeptId(chargeDeptId);
+                        relation.setUpdateUserId(operateUserId);
+                        relationList.add(relation);
+                    }
+                }
+            }
+        }
+        return relationList;
+    }
+
     //补充项目流程图节点关系
-    private void supplyProjectLiuChengTuTargetUserRelation(List<ProjectBase> projectBaseList){
+    private void supplyProjectLiuChengTuTargetDeptRelation(List<ProjectBase> projectBaseList){
         List<Long> projectBaseIdList=new ArrayList<>();
         for(ProjectBase projectBase:projectBaseList){
             projectBaseIdList.add(projectBase.getId());
         }
         if(projectBaseIdList.size()>0){
-            QueryProjectLiuChengTuNodeTargetUserRelationParam param=new QueryProjectLiuChengTuNodeTargetUserRelationParam();
+            QueryProjectLiuChengTuNodeTargetDeptRelationParam param=new QueryProjectLiuChengTuNodeTargetDeptRelationParam();
             param.setProjectBaseIdList(projectBaseIdList);
-            List<ProjectLiuChengTuNodeTargetUserRelation> relationList=projectLiuChengTuNodeTargetUserRelationService.selectProjectLiuChengTuNodeTargetUserRelationList(param);
-            Map<Long,List<ProjectLiuChengTuNodeTargetUserRelation>> projectBaseIdTargetRelationListMap=new HashMap<>();
-            for(ProjectLiuChengTuNodeTargetUserRelation relation:relationList){
-                List<ProjectLiuChengTuNodeTargetUserRelation> targetRelationList=projectBaseIdTargetRelationListMap.get(relation.getProjectBaseId());
+            List<ProjectLiuChengTuNodeTargetDeptRelation> relationList=projectLiuChengTuNodeTargetDeptRelationService.selectProjectLiuChengTuNodeTargetDeptRelationList(param);
+            Map<Long,List<ProjectLiuChengTuNodeTargetDeptRelation>> projectBaseIdTargetRelationListMap=new HashMap<>();
+            for(ProjectLiuChengTuNodeTargetDeptRelation relation:relationList){
+                List<ProjectLiuChengTuNodeTargetDeptRelation> targetRelationList=projectBaseIdTargetRelationListMap.get(relation.getProjectBaseId());
                 if(targetRelationList==null){
                     targetRelationList=new ArrayList<>();
                 }

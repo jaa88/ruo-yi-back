@@ -4,12 +4,12 @@ import com.ruoyi.common.api.CommonResult;
 import com.ruoyi.framework.web.controller.BaseController;
 import com.ruoyi.project.projectmanage.domain.ProjectBase;
 import com.ruoyi.project.projectmanage.domain.ProjectLiuChengTuDataLog;
+import com.ruoyi.project.projectmanage.domain.ProjectLiuChengTuNodeTargetDeptRelation;
 import com.ruoyi.project.projectmanage.domain.ProjectLiuChengTuTemplate;
-import com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectBaseParam;
-import com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectLiuChengTuDataLogParam;
-import com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectLiuChengTuTemplateParam;
+import com.ruoyi.project.projectmanage.domain.queryandresponse.*;
 import com.ruoyi.project.projectmanage.service.IProjectBaseService;
 import com.ruoyi.project.projectmanage.service.IProjectLiuChengTuNodeService;
+import com.ruoyi.project.projectmanage.service.IProjectLiuChengTuNodeTargetDeptRelationService;
 import com.ruoyi.project.projectmanage.service.IProjectLiuChengTuService;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +32,9 @@ public class ProjectLiuChengTuController extends BaseController
     private IProjectLiuChengTuService projectLiuChengTuService;
     @Resource
     private IProjectBaseService projectBaseService;
+    @Resource
+    private IProjectLiuChengTuNodeTargetDeptRelationService projectLiuChengTuNodeTargetDeptRelationService;
+
     /**
      * 获取模板列表
      */
@@ -98,14 +101,6 @@ public class ProjectLiuChengTuController extends BaseController
         return CommonResult.success(null);
     }
 
-
-    private void insertOrUpdateLiuChengTuNodeTargetChargeUserIdRelation(ProjectLiuChengTuDataLog log){
-        if(log.getProjectBaseId()!=null){
-            //删除所有的node关系
-
-        }
-    }
-
     /**
      * 新增模板
      */
@@ -156,4 +151,20 @@ public class ProjectLiuChengTuController extends BaseController
         return CommonResult.success(null);
     }
 
+    /**
+     * 查询任务节点情况
+     */
+    //@PreAuthorize("@ss.hasPermi('project:base:list')")
+    @RequestMapping(value = "/queryProjectLiuChengTuNodeByParam", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult queryProjectLiuChengTuNodeByParam(@RequestBody QueryProjectLiuChengTuNodeTargetDeptRelationParam param)
+    {
+        int totalCount=projectLiuChengTuNodeTargetDeptRelationService.selectProjectLiuChengTuNodeTargetDeptRelationCount(param);
+        List<ProjectLiuChengTuNodeTargetDeptRelation> list=new ArrayList<>();
+        if(totalCount>0){
+            param.setStartIndex((param.getPageNum()-1)*param.getPageSize());
+            list=projectLiuChengTuNodeTargetDeptRelationService.selectProjectLiuChengTuNodeTargetDeptRelationList(param);
+        }
+        return CommonResult.success(list,totalCount);
+    }
 }

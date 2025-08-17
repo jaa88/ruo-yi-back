@@ -18,11 +18,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <insert id="insertProjectLiuChengTuNodeList" parameterType="list" useGeneratedKeys="true" keyProperty="id">
         insert into project_liu_cheng_tu_node (
         project_base_id, graph_node_id, data_json_str,
-        update_time, update_user_id,status )
+        update_time, update_user_id,status,task_name,start_time,expected_end_time )
         VALUES
         <foreach collection="list" item="item" separator=",">
             (#{item.projectBaseId},#{item.graphNodeId},#{item.dataJsonStr},
-             now(), #{item.updateUserId},#{item.status})
+             now(), #{item.updateUserId},#{item.status},#{item.taskName},#{item.startTime},#{item.expectedEndTime})
         </foreach>
     </insert>
 

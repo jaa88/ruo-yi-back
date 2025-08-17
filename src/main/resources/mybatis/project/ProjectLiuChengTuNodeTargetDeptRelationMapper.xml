@@ -13,6 +13,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateTime"    column="update_time"    />
         <result property="dataJsonStr"    column="data_json_str"    />
         <result property="status"    column="status"    />
+        <result property="projectName"    column="project_name"    />
+        <result property="taskName"    column="task_name"    />
+        <result property="deptName"    column="dept_name"    />
+        <result property="startTime"    column="start_time"    />
+        <result property="expectedEndTime"    column="expected_end_time"    />
     </resultMap>
 
     <insert id="insertProjectLiuChengTuNodeTargetDeptRelationList" parameterType="list">
@@ -31,24 +36,61 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <select id="selectProjectLiuChengTuNodeTargetDeptRelationList" parameterType="com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectLiuChengTuNodeTargetDeptRelationParam" resultMap="tempMap">
-        select a.*,b.data_json_str,b.status,c.project_name from project_liu_cheng_tu_node_target_dept_relation a
-        left join project_liu_cheng_tu_node b on a.node_id=b.id
-        left join project_base c on b.project_base_id=c.id
+        select c.* ,d.dept_name,e.project_name
+        from
+        (select a.* ,b.charge_dept_id from project_liu_cheng_tu_node a left join project_liu_cheng_tu_node_target_dept_relation b on a.id =b.node_id) c
+        left join sys_dept d on c.charge_dept_id=d.dept_id
+        left join project_base e on e.id =c.project_base_id
         <where>
             1=1
             <if test="status != null ">
-                and b.status =#{status}
+                and c.status =#{status}
+            </if>
+
+            <if test="taskName != null and taskName != '' ">
+                and c.task_name =#{taskName}
+            </if>
+
+            <if test="chargeDeptId != null ">
+                and c.charge_dept_id =#{chargeDeptId}
             </if>
 
             <if test="projectBaseIdList != null and  projectBaseIdList.size()>0">
-                and  a.project_base_id in
+                and  c.project_base_id in
                 <foreach collection="projectBaseIdList" item="item" separator="," open="(" close=")">
                     #{item}
                 </foreach>
             </if>
         </where>
-        order by  id asc
+        order by  c.id asc
+        limit #{ pageSize}  offset  #{startIndex}
     </select>
+
+    <select id="selectProjectLiuChengTuNodeTargetDeptRelationCount" parameterType="com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectLiuChengTuNodeTargetDeptRelationParam" resultType="int">
+        select count(1)
+        from
+        (select a.* ,b.charge_dept_id from project_liu_cheng_tu_node a left join project_liu_cheng_tu_node_target_dept_relation b on a.id =b.node_id) c
+        left join sys_dept d on c.charge_dept_id=d.dept_id
+        left join project_base e on e.id =c.project_base_id
+        <where>
+            1=1
+            <if test="status != null ">
+                and c.status =#{status}
+            </if>
+
+            <if test="chargeDeptId != null ">
+                and c.charge_dept_id =#{chargeDeptId}
+            </if>
+
+            <if test="projectBaseIdList != null and  projectBaseIdList.size()>0">
+                and  c.project_base_id in
+                <foreach collection="projectBaseIdList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
 
 
 </mapper>

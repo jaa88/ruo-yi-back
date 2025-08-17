@@ -23,7 +23,7 @@ public class ProjectBase {
     private List<Long> canEditProjectDeptIdList;
     private List<SysDept> canEditProjectDeptList;
     //节点关系
-    private List<ProjectLiuChengTuNodeTargetUserRelation> relationList;
+    private List<ProjectLiuChengTuNodeTargetDeptRelation> relationList;
     //目录配置
     private String contentsSetStr;
     //项目主图
@@ -154,11 +154,11 @@ public class ProjectBase {
         this.contentsSetStr = contentsSetStr;
     }
 
-    public List<ProjectLiuChengTuNodeTargetUserRelation> getRelationList() {
+    public List<ProjectLiuChengTuNodeTargetDeptRelation> getRelationList() {
         return relationList;
     }
 
-    public void setRelationList(List<ProjectLiuChengTuNodeTargetUserRelation> relationList) {
+    public void setRelationList(List<ProjectLiuChengTuNodeTargetDeptRelation> relationList) {
         this.relationList = relationList;
     }
 

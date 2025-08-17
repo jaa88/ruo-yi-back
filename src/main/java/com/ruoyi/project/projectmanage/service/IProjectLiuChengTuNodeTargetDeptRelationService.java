@@ -1,4 +1,4 @@
-package com.ruoyi.project.projectmanage.mapper;
+package com.ruoyi.project.projectmanage.service;
 
 import com.ruoyi.project.projectmanage.domain.ProjectLiuChengTuNodeTargetDeptRelation;
 import com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectLiuChengTuNodeTargetDeptRelationParam;
@@ -6,9 +6,9 @@ import com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectLiuCh
 import java.util.List;
 
 /**
- * 项目列表 数据层
+ * 项目列表 服务层
  */
-public interface ProjectLiuChengTuNodeTargetDeptRelationMapper
+public interface IProjectLiuChengTuNodeTargetDeptRelationService
 {
     void insertProjectLiuChengTuNodeTargetDeptRelationList(List<ProjectLiuChengTuNodeTargetDeptRelation> relationList);
 
