@@ -18,6 +18,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="deptName"    column="dept_name"    />
         <result property="startTime"    column="start_time"    />
         <result property="expectedEndTime"    column="expected_end_time"    />
+        <result property="originFileNameListStr"    column="origin_file_name_list_str"    />
+        <result property="curFilePathAndNameListStr"    column="cur_file_path_and_name_list_str"    />
     </resultMap>
 
     <insert id="insertProjectLiuChengTuNodeTargetDeptRelationList" parameterType="list">
@@ -48,7 +50,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             </if>
 
             <if test="taskName != null and taskName != '' ">
-                and c.task_name =#{taskName}
+                and c.task_name like CONCAT('%',#{taskName},'%')
+            </if>
+
+            <if test="fileName != null and fileName != '' ">
+                and c.origin_file_name_list_str like CONCAT('%',#{fileName},'%')
             </if>
 
             <if test="chargeDeptId != null ">
@@ -58,6 +64,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="projectBaseIdList != null and  projectBaseIdList.size()>0">
                 and  c.project_base_id in
                 <foreach collection="projectBaseIdList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+
+            <if test="statusList != null and  statusList.size()>0">
+                and  c.status in
+                <foreach collection="statusList" item="item" separator="," open="(" close=")">
                     #{item}
                 </foreach>
             </if>
@@ -78,6 +91,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 and c.status =#{status}
             </if>
 
+            <if test="taskName != null and taskName != '' ">
+                and c.task_name like CONCAT('%',#{taskName},'%')
+            </if>
+
+            <if test="fileName != null and fileName != '' ">
+                and c.origin_file_name_list_str like CONCAT('%',#{fileName},'%')
+            </if>
+
             <if test="chargeDeptId != null ">
                 and c.charge_dept_id =#{chargeDeptId}
             </if>
@@ -85,6 +106,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="projectBaseIdList != null and  projectBaseIdList.size()>0">
                 and  c.project_base_id in
                 <foreach collection="projectBaseIdList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+
+            <if test="statusList != null and  statusList.size()>0">
+                and  c.status in
+                <foreach collection="statusList" item="item" separator="," open="(" close=")">
                     #{item}
                 </foreach>
             </if>

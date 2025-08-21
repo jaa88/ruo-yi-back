@@ -278,6 +278,13 @@ public class ProjectBaseServiceImpl implements IProjectBaseService {
                         node.setExpectedEndTime(null);
                     }
                 }
+                //文件相关
+                String originFileNameListStr=dataJSONObject.getString("originFileNameListStr");
+                String curFilePathAndNameListStr=dataJSONObject.getString("curFilePathAndNameListStr");
+                if(originFileNameListStr!=null && curFilePathAndNameListStr!=null && !"".equals(originFileNameListStr)){
+                    node.setOriginFileNameListStr(originFileNameListStr);
+                    node.setCurFilePathAndNameListStr(curFilePathAndNameListStr);
+                }
                 nodeList.add(node);
             }
         }

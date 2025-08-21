@@ -24,6 +24,24 @@ public class ProjectLiuChengTuNodeTargetDeptRelation {
     private String taskName;
     private Date startTime;
     private Date expectedEndTime;
+    private String originFileNameListStr;
+    private String curFilePathAndNameListStr;
+
+    public String getOriginFileNameListStr() {
+        return originFileNameListStr;
+    }
+
+    public void setOriginFileNameListStr(String originFileNameListStr) {
+        this.originFileNameListStr = originFileNameListStr;
+    }
+
+    public String getCurFilePathAndNameListStr() {
+        return curFilePathAndNameListStr;
+    }
+
+    public void setCurFilePathAndNameListStr(String curFilePathAndNameListStr) {
+        this.curFilePathAndNameListStr = curFilePathAndNameListStr;
+    }
 
     public Date getStartTime() {
         return startTime;

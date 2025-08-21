@@ -1,7 +1,5 @@
 package com.ruoyi.project.projectmanage.domain;
 
-import com.ruoyi.project.system.domain.SysUser;
-
 import java.util.Date;
 import java.util.List;
 
@@ -20,6 +18,45 @@ public class ProjectLiuChengTuNode {
     private String taskName;
     private Date startTime;
     private Date expectedEndTime;
+    //文件
+    private List<String> originFileNameList;
+    private List<String> curFilePathAndNameList;
+    //文件 ，上述两个list的拼接，以*@*分割
+    private String originFileNameListStr;
+    private String curFilePathAndNameListStr;
+
+
+    public List<String> getOriginFileNameList() {
+        return originFileNameList;
+    }
+
+    public void setOriginFileNameList(List<String> originFileNameList) {
+        this.originFileNameList = originFileNameList;
+    }
+
+    public List<String> getCurFilePathAndNameList() {
+        return curFilePathAndNameList;
+    }
+
+    public void setCurFilePathAndNameList(List<String> curFilePathAndNameList) {
+        this.curFilePathAndNameList = curFilePathAndNameList;
+    }
+
+    public String getOriginFileNameListStr() {
+        return originFileNameListStr;
+    }
+
+    public void setOriginFileNameListStr(String originFileNameListStr) {
+        this.originFileNameListStr = originFileNameListStr;
+    }
+
+    public String getCurFilePathAndNameListStr() {
+        return curFilePathAndNameListStr;
+    }
+
+    public void setCurFilePathAndNameListStr(String curFilePathAndNameListStr) {
+        this.curFilePathAndNameListStr = curFilePathAndNameListStr;
+    }
 
     public Date getStartTime() {
         return startTime;

@@ -7,8 +7,26 @@ import java.util.List;
 public class QueryProjectLiuChengTuNodeTargetDeptRelationParam extends BasePageParam {
     private List<Long> projectBaseIdList;
     private Integer status;
+    private List<Integer> statusList;
     private Long chargeDeptId;
     private String taskName;
+    private String fileName;
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public List<Integer> getStatusList() {
+        return statusList;
+    }
+
+    public void setStatusList(List<Integer> statusList) {
+        this.statusList = statusList;
+    }
 
     public String getTaskName() {
         return taskName;
