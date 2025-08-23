@@ -55,11 +55,11 @@ public class FileUploadUtils
      * @return 文件名称
      * @throws Exception
      */
-    public static final String upload(MultipartFile file) throws IOException
+    public static final String upload(MultipartFile file,boolean useSpecialDirPath,String specialDirPath) throws IOException
     {
         try
         {
-            return upload(getDefaultBaseDir(), file, MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION);
+            return upload(getDefaultBaseDir(), file, MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION,useSpecialDirPath,specialDirPath);
         }
         catch (Exception e)
         {
@@ -75,11 +75,11 @@ public class FileUploadUtils
      * @return 文件名称
      * @throws IOException
      */
-    public static final String upload(String baseDir, MultipartFile file) throws IOException
+    public static final String upload(String baseDir, MultipartFile file,boolean useSpecialDirPath,String specialDirPath) throws IOException
     {
         try
         {
-            return upload(baseDir, file, MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION);
+            return upload(baseDir, file, MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION,useSpecialDirPath,specialDirPath);
         }
         catch (Exception e)
         {
@@ -99,11 +99,11 @@ public class FileUploadUtils
      * @throws IOException 比如读写文件出错时
      * @throws InvalidExtensionException 文件校验异常
      */
-    public static final String upload(String baseDir, MultipartFile file, String[] allowedExtension)
+    public static final String upload(String baseDir, MultipartFile file, String[] allowedExtension,boolean useSpecialDirPath,String specialDirPath)
             throws FileSizeLimitExceededException, IOException, FileNameLengthLimitExceededException,
             InvalidExtensionException
     {
-        return upload(baseDir, file, allowedExtension, false);
+        return upload(baseDir, file, allowedExtension, false,useSpecialDirPath,specialDirPath);
     }
     
     /**
@@ -119,7 +119,7 @@ public class FileUploadUtils
      * @throws IOException 比如读写文件出错时
      * @throws InvalidExtensionException 文件校验异常
      */
-    public static final String upload(String baseDir, MultipartFile file, String[] allowedExtension, boolean useCustomNaming)
+    public static final String upload(String baseDir, MultipartFile file, String[] allowedExtension, boolean useCustomNaming,boolean useSpecialDirPath,String specialDirPath)
             throws FileSizeLimitExceededException, IOException, FileNameLengthLimitExceededException,
             InvalidExtensionException
     {
@@ -131,7 +131,7 @@ public class FileUploadUtils
 
         assertAllowed(file, allowedExtension);
 
-        String fileName = useCustomNaming ? uuidFilename(file) : extractFilename(file);
+        String fileName =useSpecialDirPath?specialDirStrFilename(file,specialDirPath):useCustomNaming ? uuidFilename(file) : extractFilename(file);
 
         String absPath = getAbsoluteFile(baseDir, fileName).getAbsolutePath();
         file.transferTo(Paths.get(absPath));
@@ -144,6 +144,14 @@ public class FileUploadUtils
     public static final String extractFilename(MultipartFile file)
     {
         return StringUtils.format("{}/{}_{}.{}", DateUtils.datePath(), FilenameUtils.getBaseName(file.getOriginalFilename()), Seq.getId(Seq.uploadSeqType), getExtension(file));
+    }
+
+    /**
+     * 编码文件名(日期格式目录 + 原文件名 + 序列值 + 后缀)
+     */
+    public static final String specialDirStrFilename(MultipartFile file,String specialDirStr)
+    {
+        return StringUtils.format("{}/{}_{}.{}", specialDirStr, FilenameUtils.getBaseName(file.getOriginalFilename()), Seq.getId(Seq.uploadSeqType), getExtension(file));
     }
 
     /**

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.system.mapper.SysFunctionAndUploadFileRelationMapper">
+    
+    <resultMap type="com.ruoyi.project.system.domain.SysFunctionAndUploadFileRelation" id="tempMap">
+    	<id     property="id"      column="id"      />
+        <result property="functionName"    column="function_name"    />
+        <result property="functionId"     column="function_id"     />
+        <result property="uploadFileId"    column="upload_file_id"    />
+
+        <result property="createUserId"    column="create_user_id"    />
+        <result property="createTime"   column="create_time"   />
+        <result property="updateUserId"    column="update_user_id"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="deleteFlag"    column="delete_flag"    />
+    </resultMap>
+
+    <insert id="insertProjectBaseAndDeptRelationList" parameterType="list">
+        insert into sys_function_and_upload_file_relation(
+        function_name, function_id, upload_file_id, create_user_id, create_time,
+        update_user_id,update_time
+        )
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.functionName},#{item.functionId},#{item.uploadFileId},#{item.createUserId},now(),
+            #{item.updateUserId}, now())
+        </foreach>
+    </insert>
+
+    <select id="selectFunctionAndUploadFileRelationList" parameterType="com.ruoyi.project.system.domain.queryandresponse.QuerySysFunctionAndUploadFileRelationParam" resultMap="tempMap">
+        SELECT * from sys_function_and_upload_file_relation
+        <where>
+            delete_flag=0
+            <if test="functionIdList != null and  functionIdList.size()>0">
+                and  function_id in
+                <foreach collection="functionIdList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+
+            <if test="functionName!=null and functionName!=''">
+                and  function_name = #{functionName}
+            </if>
+        </where>
+        limit 1000
+        order by  id asc
+    </select>
+
+    <update id="deleteProjectBaseAndDeptRelationByIdList" parameterType="list">
+        <foreach collection="list" item="item" separator=";">
+            update sys_function_and_upload_file_relation set
+            delete_flag=1 where id=#{item}
+        </foreach>
+    </update>
+
+</mapper>

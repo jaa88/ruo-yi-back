@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.system.mapper.SysUploadFileMapper">
+    
+    <resultMap type="com.ruoyi.project.system.domain.SysUploadFile" id="tempMap">
+    	<id     property="id"      column="id"      />
+        <result property="originalFileName"    column="original_file_name"    />
+        <result property="curFilePathAndName"     column="cur_file_path_and_name"     />
+        <result property="createUserId"    column="create_user_id"    />
+        <result property="createTime"   column="create_time"   />
+
+        <result property="updateUserId"    column="update_user_id"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="deleteFlag"    column="delete_flag"    />
+    </resultMap>
+
+    <insert id="insertSysUploadFileList" parameterType="list" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_upload_file (
+        original_file_name, cur_file_path_and_name, update_time, create_user_id, create_time, update_user_id)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.originalFileName},#{item.curFilePathAndName},now(),#{item.createUserId},now(),
+            #{item.updateUserId})
+        </foreach>
+    </insert>
+
+    <update id="deleteSysUploadFile" parameterType="list">
+        <foreach collection="list" item="item" separator=";">
+            update sys_upload_file set
+            delete_flag=1 where id=#{item}
+        </foreach>
+    </update>
+
+</mapper>
