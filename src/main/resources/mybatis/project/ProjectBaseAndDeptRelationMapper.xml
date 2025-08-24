@@ -48,10 +48,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
     <update id="deleteProjectBaseAndDeptRelationByIdList" parameterType="list">
-        <foreach collection="list" item="item" separator=";">
-            update project_base_and_dept_relation set
-            delete_flag=1 where id=#{item}
+        UPDATE project_base_and_dept_relation
+        SET delete_flag = 1
+        WHERE id IN
+        <foreach collection="idList" item="item" separator="," open="(" close=")">
+            #{item}
         </foreach>
     </update>
-
 </mapper>

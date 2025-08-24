@@ -48,7 +48,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         order by  id asc
     </select>
 
-    <update id="deleteProjectBaseAndDeptRelationByIdList" parameterType="list">
+    <update id="deleteFunctionAndUploadFileRelation" parameterType="list">
         <foreach collection="list" item="item" separator=";">
             update sys_function_and_upload_file_relation set
             delete_flag=1 where id=#{item}

@@ -14,14 +14,13 @@ public class ProjectBase {
     private String projectName;
     private Long currentLiuChengTuDataLogId;
     private Date createTime;
-    private Long projectChargeUserId;
     private Long updateUserId;
     private Date updateTime;
     private String remark;
     private Integer deleteFlag;
     private String cellsJsonStr;
-    private List<Long> canEditProjectDeptIdList;
-    private List<SysDept> canEditProjectDeptList;
+    private List<Long> deptIdList;
+    private List<SysDept> deptList;
     //节点关系
     private List<ProjectLiuChengTuNodeTargetDeptRelation> relationList;
     //目录配置
@@ -29,19 +28,32 @@ public class ProjectBase {
     //项目主图
     private String projectMainImagePathAndName;
 
+    //项目代码
     private String xiangMuDaiMa;
+    //目前阶段
+    private Integer muQianJieDuan;
+    //项目地址
     private String xiangMuDiZhi;
-    private String xiangMuLeiXing;
-    private String jianSheXingZhi;
+    //项目类型
+    private Integer xiangMuLeiXing;
+    //建设性质
+    private Integer jianSheXingZhi;
+    //总投资
     private String zongTouZi;
-    private String niKaiGongRiQi;
-    private String niWanGongRiQi;
+    //拟开工日期
+    private Date niKaiGongRiQi;
+    //拟完工日期
+    private Date niWanGongRiQi;
+    //建设单位
     private String jianSheDanWei;
+    //项目负责人
     private String xiangMuFuZeRen;
+    //联系方式
     private String lianXiFangShi;
+    //主要建设内容
     private String zhuYaoJianSheNeiRong;
+    //你新增用地情况
     private String niXinZenYongDiQingKuang;
-
 
     public String getZhuYaoJianSheNeiRong() {
         return zhuYaoJianSheNeiRong;
@@ -75,44 +87,12 @@ public class ProjectBase {
         this.xiangMuDiZhi = xiangMuDiZhi;
     }
 
-    public String getXiangMuLeiXing() {
-        return xiangMuLeiXing;
-    }
-
-    public void setXiangMuLeiXing(String xiangMuLeiXing) {
-        this.xiangMuLeiXing = xiangMuLeiXing;
-    }
-
-    public String getJianSheXingZhi() {
-        return jianSheXingZhi;
-    }
-
-    public void setJianSheXingZhi(String jianSheXingZhi) {
-        this.jianSheXingZhi = jianSheXingZhi;
-    }
-
     public String getZongTouZi() {
         return zongTouZi;
     }
 
     public void setZongTouZi(String zongTouZi) {
         this.zongTouZi = zongTouZi;
-    }
-
-    public String getNiKaiGongRiQi() {
-        return niKaiGongRiQi;
-    }
-
-    public void setNiKaiGongRiQi(String niKaiGongRiQi) {
-        this.niKaiGongRiQi = niKaiGongRiQi;
-    }
-
-    public String getNiWanGongRiQi() {
-        return niWanGongRiQi;
-    }
-
-    public void setNiWanGongRiQi(String niWanGongRiQi) {
-        this.niWanGongRiQi = niWanGongRiQi;
     }
 
     public String getJianSheDanWei() {
@@ -163,20 +143,20 @@ public class ProjectBase {
         this.relationList = relationList;
     }
 
-    public List<Long> getCanEditProjectDeptIdList() {
-        return canEditProjectDeptIdList;
+    public List<Long> getDeptIdList() {
+        return deptIdList;
     }
 
-    public void setCanEditProjectDeptIdList(List<Long> canEditProjectDeptIdList) {
-        this.canEditProjectDeptIdList = canEditProjectDeptIdList;
+    public void setDeptIdList(List<Long> deptIdList) {
+        this.deptIdList = deptIdList;
     }
 
-    public List<SysDept> getCanEditProjectDeptList() {
-        return canEditProjectDeptList;
+    public List<SysDept> getDeptList() {
+        return deptList;
     }
 
-    public void setCanEditProjectDeptList(List<SysDept> canEditProjectDeptList) {
-        this.canEditProjectDeptList = canEditProjectDeptList;
+    public void setDeptList(List<SysDept> deptList) {
+        this.deptList = deptList;
     }
 
     public String getCellsJsonStr() {
@@ -236,14 +216,6 @@ public class ProjectBase {
         this.createTime = createTime;
     }
 
-    public Long getProjectChargeUserId() {
-        return projectChargeUserId;
-    }
-
-    public void setProjectChargeUserId(Long projectChargeUserId) {
-        this.projectChargeUserId = projectChargeUserId;
-    }
-
     public Long getUpdateUserId() {
         return updateUserId;
     }
@@ -258,5 +230,45 @@ public class ProjectBase {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public Integer getMuQianJieDuan() {
+        return muQianJieDuan;
+    }
+
+    public void setMuQianJieDuan(Integer muQianJieDuan) {
+        this.muQianJieDuan = muQianJieDuan;
+    }
+
+    public Integer getXiangMuLeiXing() {
+        return xiangMuLeiXing;
+    }
+
+    public void setXiangMuLeiXing(Integer xiangMuLeiXing) {
+        this.xiangMuLeiXing = xiangMuLeiXing;
+    }
+
+    public Integer getJianSheXingZhi() {
+        return jianSheXingZhi;
+    }
+
+    public void setJianSheXingZhi(Integer jianSheXingZhi) {
+        this.jianSheXingZhi = jianSheXingZhi;
+    }
+
+    public Date getNiKaiGongRiQi() {
+        return niKaiGongRiQi;
+    }
+
+    public void setNiKaiGongRiQi(Date niKaiGongRiQi) {
+        this.niKaiGongRiQi = niKaiGongRiQi;
+    }
+
+    public Date getNiWanGongRiQi() {
+        return niWanGongRiQi;
+    }
+
+    public void setNiWanGongRiQi(Date niWanGongRiQi) {
+        this.niWanGongRiQi = niWanGongRiQi;
     }
 }

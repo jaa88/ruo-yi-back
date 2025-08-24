@@ -9,7 +9,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="projectName"    column="project_name"    />
         <result property="currentLiuChengTuDataLogId"     column="current_liu_cheng_tu_data_log_id"     />
         <result property="createTime"   column="create_time"   />
-        <result property="projectChargeUserId"    column="project_charge_user_id"    />
         <result property="updateUserId"      column="update_user_id"      />
         <result property="updateTime"    column="update_time"    />
         <result property="remark"    column="remark"    />
@@ -18,6 +17,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="projectMainImagePathAndName"    column="project_main_image_path_and_name"    />
 
         <result property="xiangMuDaiMa"    column="xiang_mu_dai_ma"    />
+        <result property="muQianJieDuan"    column="mu_qian_jie_duan"    />
         <result property="xiangMuDiZhi"     column="xiang_mu_di_zhi"     />
         <result property="xiangMuLeiXing"   column="xiang_mu_lei_xing"   />
         <result property="jianSheXingZhi"    column="jian_she_xing_zhi"    />
@@ -38,6 +38,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="projectName != null and  projectName !=''">
                 and project_name like CONCAT('%',#{projectName},'%')
             </if>
+
+            <if test="projectBaseId != null and  projectBaseId !=0 ">
+                and id=#{projectBaseId}
+            </if>
+
+            <if test="xiangMuLeiXing != null">
+                and xiang_mu_lei_xing=#{xiangMuLeiXing}
+            </if>
+
+            <if test="jianSheXingZhi != null">
+                and jian_she_xing_zhi=#{jianSheXingZhi}
+            </if>
+
+            <if test="muQianJieDuan != null">
+                and mu_qian_jie_duan=#{muQianJieDuan}
+            </if>
         </where>
     </select>
 
@@ -52,10 +68,23 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="projectBaseId != null and  projectBaseId !=0 ">
                 and id=#{projectBaseId}
             </if>
+
+            <if test="xiangMuLeiXing != null">
+                and xiang_mu_lei_xing=#{xiangMuLeiXing}
+            </if>
+
+            <if test="jianSheXingZhi != null">
+                and jian_she_xing_zhi=#{jianSheXingZhi}
+            </if>
+
+            <if test="muQianJieDuan != null">
+                and mu_qian_jie_duan=#{muQianJieDuan}
+            </if>
         </where>
         order by  id asc
         limit #{ pageSize}  offset  #{startIndex}
     </select>
+
 
     <update id="updateProjectBase" parameterType="com.ruoyi.project.projectmanage.domain.ProjectBase">
         update project_base set
@@ -76,6 +105,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </if>
         <if test="xiangMuDaiMa!=null">
             xiang_mu_dai_ma=#{xiangMuDaiMa},
+        </if>
+        <if test="muQianJieDuan!=null">
+            mu_qian_jie_duan=#{muQianJieDuan},
         </if>
         <if test="xiangMuDiZhi!=null">
             xiang_mu_di_zhi=#{xiangMuDiZhi},
@@ -118,14 +150,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <insert id="insertProjectBase" parameterType="com.ruoyi.project.projectmanage.domain.ProjectBase" useGeneratedKeys="true" keyProperty="id">
         insert into project_base (
          project_name, current_liu_cheng_tu_data_log_id, create_time,
-         project_charge_user_id, update_user_id, update_time,remark,contents_set_str,project_main_image_path_and_name,
-         xiang_mu_dai_ma, xiang_mu_di_zhi, xiang_mu_lei_xing, jian_she_xing_zhi, zong_tou_zi,
+          update_user_id, update_time,remark,contents_set_str,project_main_image_path_and_name,
+         xiang_mu_dai_ma,mu_qian_jie_duan, xiang_mu_di_zhi, xiang_mu_lei_xing, jian_she_xing_zhi, zong_tou_zi,
          ni_kai_gong_ri_qi, ni_wan_gong_ri_qi, jian_she_dan_wei, xiang_mu_fu_ze_ren, lian_xi_fang_shi,
          zhu_yao_jian_she_nei_rong, ni_xin_zen_yong_di_qing_kuang)
         VALUES
         (#{projectName},#{currentLiuChengTuDataLogId},now(),
-         #{projectChargeUserId}, #{updateUserId}, now(),#{remark},#{contentsSetStr},#{projectMainImagePathAndName},
-         #{xiangMuDaiMa}, #{xiangMuDiZhi},#{xiangMuLeiXing}, #{jianSheXingZhi},#{zongTouZi},
+          #{updateUserId}, now(),#{remark},#{contentsSetStr},#{projectMainImagePathAndName},
+         #{xiangMuDaiMa}, #{muQianJieDuan}, #{xiangMuDiZhi},#{xiangMuLeiXing}, #{jianSheXingZhi},#{zongTouZi},
           #{niKaiGongRiQi},#{niWanGongRiQi},#{jianSheDanWei}, #{xiangMuFuZeRen},#{lianXiFangShi},
           #{zhuYaoJianSheNeiRong},#{niXinZenYongDiQingKuang}
          )

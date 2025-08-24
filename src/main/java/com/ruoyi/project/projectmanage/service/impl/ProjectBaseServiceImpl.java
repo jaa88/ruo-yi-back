@@ -74,19 +74,20 @@ public class ProjectBaseServiceImpl implements IProjectBaseService {
                 }
             }
         }
-        //补充流程图与用户之间的关系
+        //补充流程图与部门之间的关系
         Map<Long,SysDept> sysDeptMap=sysUserService.selectAllDeptMap();
         List<Long> projectIdList=new ArrayList<>();
         for(ProjectBase projectBase:list){
             projectIdList.add(projectBase.getId());
         }
+        //查现有的关系
         QueryProjectBaseAndDeptRelationParam queryProjectBaseAndDeptRelationParam=new QueryProjectBaseAndDeptRelationParam();
         queryProjectBaseAndDeptRelationParam.setProjectBaseIdList(projectIdList);
-        List<ProjectBaseAndDeptRelation> ProjectBaseAndDeptRelationList=projectBaseAndDeptRelationService.selectProjectBaseAndDeptRelationList(queryProjectBaseAndDeptRelationParam);
-        if(ProjectBaseAndDeptRelationList.size()>0 && sysDeptMap.size()>0){
+        List<ProjectBaseAndDeptRelation> projectBaseAndDeptRelationList=projectBaseAndDeptRelationService.selectProjectBaseAndDeptRelationList(queryProjectBaseAndDeptRelationParam);
+        if(projectBaseAndDeptRelationList.size()>0 && sysDeptMap.size()>0){
             Map<Long,List<SysDept>> projectBaseIdTargetDeptListMap=new HashMap<>();
             Map<Long,List<Long>> projectBaseIdTargetDeptIdListMap=new HashMap<>();
-            for(ProjectBaseAndDeptRelation relation:ProjectBaseAndDeptRelationList){
+            for(ProjectBaseAndDeptRelation relation:projectBaseAndDeptRelationList){
                 List<SysDept> deptList=projectBaseIdTargetDeptListMap.get(relation.getProjectBaseId());
                 List<Long> deptIdList=projectBaseIdTargetDeptIdListMap.get(relation.getProjectBaseId());
                 if(deptList==null){
@@ -103,8 +104,8 @@ public class ProjectBaseServiceImpl implements IProjectBaseService {
             //补充
             for(ProjectBase projectBase:list){
                 Long projectBaseId=projectBase.getId();
-                projectBase.setCanEditProjectDeptList(projectBaseIdTargetDeptListMap.get(projectBaseId));
-                projectBase.setCanEditProjectDeptIdList(projectBaseIdTargetDeptIdListMap.get(projectBaseId));
+                projectBase.setDeptList(projectBaseIdTargetDeptListMap.get(projectBaseId));
+                projectBase.setDeptIdList(projectBaseIdTargetDeptIdListMap.get(projectBaseId));
             }
         }
         //补充流程图中的节点与部门之间的关系，目前没有用到 0816
@@ -117,46 +118,18 @@ public class ProjectBaseServiceImpl implements IProjectBaseService {
     public void updateProjectBase(ProjectBase projectBase,boolean onlyUpdateLiuChengTuDataLogFlag) {
         if(onlyUpdateLiuChengTuDataLogFlag){
             //只是动了流程图的话，相关节点的关系进行删除、新增
+            //注意，节点里的部门发生变化，也要更新外面的部门
             insertProjectLiuChengTuNodeListByProjectBase(projectBase,projectBase.getUpdateUserId());
-        }else{
-            //目前的deptIdList
-            List<Long> curCanEditProjectDeptIdList=projectBase.getCanEditProjectDeptIdList();
-            //获取数据库中的canEditProjectDeptIdList
-            Set<Long> dbCanEditProjectUserIdSet=getDbCanEditProjectDeptIdSet(projectBase.getId());
-            //需要新增的权限
-            List<ProjectBaseAndDeptRelation> newRelationList=getNewProjectBaseAndDeptRelationList(curCanEditProjectDeptIdList,dbCanEditProjectUserIdSet,projectBase.getUpdateUserId(),projectBase.getId());
-            //需要删除的权限
-            List<Long> needDeleteRelationIdLsit=getNeedDeleteRelationIdList(curCanEditProjectDeptIdList,projectBase.getId());
-            //执行新增操作
-            if(newRelationList.size()>0){
-                projectBaseAndDeptRelationService.insertProjectBaseAndDeptRelationList(newRelationList);
-            }
-            //执行删除操作
-            if(needDeleteRelationIdLsit.size()>0){
-                projectBaseAndDeptRelationService.deleteProjectBaseAndDeptRelationByIdList(needDeleteRelationIdLsit);
-            }
         }
         projectBaseMapper.updateProjectBase(projectBase);
     }
+
+
 
     @Override
     @Transactional
     public void insertProjectBase(ProjectBase projectBase) {
         projectBaseMapper.insertProjectBase(projectBase);
-        //新增成功后，会有id返回过来
-        List<Long> deptIdList=projectBase.getCanEditProjectDeptIdList();
-        if(deptIdList!=null && deptIdList.size()>0){
-            List<ProjectBaseAndDeptRelation> relationList=new ArrayList<>();
-            for(Long deptId:deptIdList){
-                ProjectBaseAndDeptRelation relation=new ProjectBaseAndDeptRelation();
-                relation.setProjectBaseId(projectBase.getId());
-                relation.setDeptId(deptId);
-                relation.setCreateUserId(projectBase.getUpdateUserId());
-                relation.setUpdateUserId(projectBase.getUpdateUserId());
-                relationList.add(relation);
-            }
-            projectBaseAndDeptRelationService.insertProjectBaseAndDeptRelationList(relationList);
-        }
     }
 
     @Override
@@ -181,26 +154,37 @@ public class ProjectBaseServiceImpl implements IProjectBaseService {
         return new HashSet<>(dbCanEditProjectDeptIdList);
     }
 
-    //获取要删除的权限
-    private List<Long> getNeedDeleteRelationIdList(List<Long> curCanEditProjectDeptIdList,Long projectBaseId){
-        QueryProjectBaseAndDeptRelationParam queryProjectBaseAndDeptRelationParam=new QueryProjectBaseAndDeptRelationParam();
-        queryProjectBaseAndDeptRelationParam.setProjectBaseIdList(Arrays.asList(projectBaseId));
-        List<ProjectBaseAndDeptRelation> relationList=projectBaseAndDeptRelationService.selectProjectBaseAndDeptRelationList(queryProjectBaseAndDeptRelationParam);
+    //获取要删除的    项目--部门    权限
+    private List<Long> getNeedDeleteRelationIdList(List<ProjectBaseAndDeptRelation> existProjectBaseAndDeptRelationList,Set<Long> nowProjectDeptIdSet ,Long projectBaseId){
         List<Long> needDeleteRelationIdLsit=new ArrayList<>();
-        for(ProjectBaseAndDeptRelation relation:relationList){
-            if(!curCanEditProjectDeptIdList.contains(relation.getDeptId())){
-                needDeleteRelationIdLsit.add(relation.getId());
+        List<Long> needDeleteDeptIdLsit=new ArrayList<>();
+        List<Long> existDeptIdList=new ArrayList<>();
+        for(ProjectBaseAndDeptRelation existProjectBaseAndDeptRelation:existProjectBaseAndDeptRelationList){
+            existDeptIdList.add(existProjectBaseAndDeptRelation.getDeptId());
+        }
+        for(Long deptId:existDeptIdList){
+            if(!nowProjectDeptIdSet.contains(deptId)){
+                needDeleteDeptIdLsit.add(deptId);
+            }
+        }
+        for(ProjectBaseAndDeptRelation existProjectBaseAndDeptRelation:existProjectBaseAndDeptRelationList){
+            if(needDeleteDeptIdLsit.contains(existProjectBaseAndDeptRelation.getDeptId())){
+                needDeleteRelationIdLsit.add(existProjectBaseAndDeptRelation.getId());
             }
         }
         return needDeleteRelationIdLsit;
     }
 
     //获取新增的权限
-    private List<ProjectBaseAndDeptRelation> getNewProjectBaseAndDeptRelationList(List<Long> curCanEditProjectDeptIdList,Set<Long> dbCanEditProjectUserIdSet,Long curUserId,Long projectBaseId){
+    private List<ProjectBaseAndDeptRelation> getNewProjectBaseAndDeptRelationList(List<ProjectBaseAndDeptRelation> existProjectBaseAndDeptRelationList,Set<Long> nowProjectDeptIdSet,Long curUserId,Long projectBaseId){
+        List<Long> existDeptIdList=new ArrayList<>();
+        for(ProjectBaseAndDeptRelation existProjectBaseAndDeptRelation:existProjectBaseAndDeptRelationList){
+            existDeptIdList.add(existProjectBaseAndDeptRelation.getDeptId());
+        }
         List<ProjectBaseAndDeptRelation> newProjectBaseAndDeptRelationList=new ArrayList<>();
-        if(curCanEditProjectDeptIdList!=null){
-            for(Long deptId:curCanEditProjectDeptIdList){
-                if(!dbCanEditProjectUserIdSet.contains(deptId)){
+        if(nowProjectDeptIdSet!=null){
+            for(Long deptId:nowProjectDeptIdSet){
+                if(!existDeptIdList.contains(deptId)){
                     ProjectBaseAndDeptRelation relation=new ProjectBaseAndDeptRelation();
                     relation.setUpdateUserId(curUserId);
                     relation.setCreateUserId(curUserId);
@@ -221,20 +205,41 @@ public class ProjectBaseServiceImpl implements IProjectBaseService {
         //删除所有的节点与部门之间的关系
         projectLiuChengTuNodeTargetDeptRelationService.deleteProjectLiuChengTuNodeTargetDeptRelationListByProjectBaseId(projectBase.getId());
         Long projectBaseId=projectBase.getId();
+        Set<Long> nowProjectDeptIdSet=new HashSet<>();
         String cellsJsonStr=projectBase.getCellsJsonStr();
         //10没什么意义，只是区分json字符串
         if(cellsJsonStr!=null && cellsJsonStr.length()>10){
             //生成节点信息
+            // ps  在这个方法里，重新赋值了 nowProjectDeptIdSet
             List<ProjectLiuChengTuNode> nodeList=generateProjectLiuChengTuNodeList(cellsJsonStr,projectBaseId,operateUserId);
             //执行新增操作
             if(nodeList.size()>0){
                 projectLiuChengTuNodeService.insertProjectLiuChengTuNodeList(nodeList);
             }
-            //再执行具体的关系人
-            List<ProjectLiuChengTuNodeTargetDeptRelation> relationList=generateProjectLiuChengTuNodeTargetDeptRelationList(nodeList,projectBaseId,operateUserId);
-            if(relationList.size()>0){
-                projectLiuChengTuNodeTargetDeptRelationService.insertProjectLiuChengTuNodeTargetDeptRelationList(relationList);
-            }
+            //修改  节点--部门 、 项目--部门  之间的关系
+            changeProjectBaseAndDeptRelation(nodeList,projectBaseId,operateUserId,nowProjectDeptIdSet);
+        }
+    }
+
+    private void changeProjectBaseAndDeptRelation(List<ProjectLiuChengTuNode> nodeList,Long projectBaseId,Long operateUserId,Set<Long> nowProjectDeptIdSet){
+        //修改流程图节点与部门之间的关系
+        List<ProjectLiuChengTuNodeTargetDeptRelation> relationList=generateProjectLiuChengTuNodeTargetDeptRelationList(nodeList,projectBaseId,operateUserId,nowProjectDeptIdSet);
+        if(relationList.size()>0){
+            projectLiuChengTuNodeTargetDeptRelationService.insertProjectLiuChengTuNodeTargetDeptRelationList(relationList);
+        }
+        //查询现有
+        QueryProjectBaseAndDeptRelationParam queryProjectBaseAndDeptRelationParam=new QueryProjectBaseAndDeptRelationParam();
+        queryProjectBaseAndDeptRelationParam.setProjectBaseIdList(Arrays.asList(projectBaseId));
+        List<ProjectBaseAndDeptRelation> existProjectBaseAndDeptRelationList=projectBaseAndDeptRelationService.selectProjectBaseAndDeptRelationList(queryProjectBaseAndDeptRelationParam);
+        //生成需要新增的deptRelation
+        List<Long> needDeleteRelationIdLsit=getNeedDeleteRelationIdList(existProjectBaseAndDeptRelationList,nowProjectDeptIdSet,projectBaseId);
+        if(needDeleteRelationIdLsit!=null && needDeleteRelationIdLsit.size()>0){
+            projectBaseAndDeptRelationService.deleteProjectBaseAndDeptRelationByIdList(needDeleteRelationIdLsit);
+        }
+        //生成需要删除的deptRelation
+        List<ProjectBaseAndDeptRelation> newProjectBaseAndDeptRelationList=getNewProjectBaseAndDeptRelationList(existProjectBaseAndDeptRelationList,nowProjectDeptIdSet,operateUserId,projectBaseId);
+        if(newProjectBaseAndDeptRelationList!=null && newProjectBaseAndDeptRelationList.size()>0){
+            projectBaseAndDeptRelationService.insertProjectBaseAndDeptRelationList(newProjectBaseAndDeptRelationList);
         }
     }
 
@@ -292,7 +297,7 @@ public class ProjectBaseServiceImpl implements IProjectBaseService {
     }
 
     //生成节点与部门之间的关系
-    private List<ProjectLiuChengTuNodeTargetDeptRelation> generateProjectLiuChengTuNodeTargetDeptRelationList(List<ProjectLiuChengTuNode> nodeList,Long projectBaseId,Long operateUserId){
+    private List<ProjectLiuChengTuNodeTargetDeptRelation> generateProjectLiuChengTuNodeTargetDeptRelationList(List<ProjectLiuChengTuNode> nodeList,Long projectBaseId,Long operateUserId,Set<Long> nowProjectDeptIdSet){
         List<ProjectLiuChengTuNodeTargetDeptRelation> relationList=new ArrayList<>();
         for(ProjectLiuChengTuNode node:nodeList){
             JSONObject dataJsonObject=JSONObject.parseObject(node.getDataJsonStr());
@@ -306,6 +311,7 @@ public class ProjectBaseServiceImpl implements IProjectBaseService {
                         relation.setChargeDeptId(chargeDeptId);
                         relation.setUpdateUserId(operateUserId);
                         relationList.add(relation);
+                        nowProjectDeptIdSet.add(chargeDeptId);
                     }
                 }
             }
