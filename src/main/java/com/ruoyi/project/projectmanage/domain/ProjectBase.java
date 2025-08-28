@@ -25,9 +25,6 @@ public class ProjectBase {
     private List<ProjectLiuChengTuNodeTargetDeptRelation> relationList;
     //目录配置
     private String contentsSetStr;
-    //项目主图
-    private String projectMainImagePathAndName;
-
     //项目代码
     private String xiangMuDaiMa;
     //目前阶段
@@ -54,6 +51,27 @@ public class ProjectBase {
     private String zhuYaoJianSheNeiRong;
     //你新增用地情况
     private String niXinZenYongDiQingKuang;
+
+    //20250828
+    //文件 ，上述两个list的拼接，以*@*分割
+    private String originFileNameListStr;
+    private String curFilePathAndNameListStr;
+
+    public String getOriginFileNameListStr() {
+        return originFileNameListStr;
+    }
+
+    public void setOriginFileNameListStr(String originFileNameListStr) {
+        this.originFileNameListStr = originFileNameListStr;
+    }
+
+    public String getCurFilePathAndNameListStr() {
+        return curFilePathAndNameListStr;
+    }
+
+    public void setCurFilePathAndNameListStr(String curFilePathAndNameListStr) {
+        this.curFilePathAndNameListStr = curFilePathAndNameListStr;
+    }
 
     public String getZhuYaoJianSheNeiRong() {
         return zhuYaoJianSheNeiRong;
@@ -117,14 +135,6 @@ public class ProjectBase {
 
     public void setLianXiFangShi(String lianXiFangShi) {
         this.lianXiFangShi = lianXiFangShi;
-    }
-
-    public String getProjectMainImagePathAndName() {
-        return projectMainImagePathAndName;
-    }
-
-    public void setProjectMainImagePathAndName(String projectMainImagePathAndName) {
-        this.projectMainImagePathAndName = projectMainImagePathAndName;
     }
 
     public String getContentsSetStr() {
@@ -271,4 +281,6 @@ public class ProjectBase {
     public void setNiWanGongRiQi(Date niWanGongRiQi) {
         this.niWanGongRiQi = niWanGongRiQi;
     }
+
+
 }

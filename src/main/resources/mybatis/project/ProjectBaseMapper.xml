@@ -14,7 +14,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="remark"    column="remark"    />
         <result property="deleteFlag"    column="delete_flag"    />
         <result property="contentsSetStr"    column="contents_set_str"    />
-        <result property="projectMainImagePathAndName"    column="project_main_image_path_and_name"    />
 
         <result property="xiangMuDaiMa"    column="xiang_mu_dai_ma"    />
         <result property="muQianJieDuan"    column="mu_qian_jie_duan"    />
@@ -29,6 +28,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="lianXiFangShi"    column="lian_xi_fang_shi"    />
         <result property="zhuYaoJianSheNeiRong"    column="zhu_yao_jian_she_nei_rong"    />
         <result property="niXinZenYongDiQingKuang"    column="ni_xin_zen_yong_di_qing_kuang"    />
+
+        <result property="originFileNameListStr"    column="origin_file_name_list_str"    />
+        <result property="curFilePathAndNameListStr"    column="cur_file_path_and_name_list_str"    />
     </resultMap>
 
     <select id="selectProjectBaseCount" parameterType="com.ruoyi.project.projectmanage.domain.queryandresponse.QueryProjectBaseParam" resultType="int">
@@ -100,9 +102,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <if test="contentsSetStr!=null">
             contents_set_str=#{contentsSetStr},
         </if>
-        <if test="projectMainImagePathAndName!=null and projectMainImagePathAndName!=''">
-            project_main_image_path_and_name=#{projectMainImagePathAndName},
-        </if>
         <if test="xiangMuDaiMa!=null">
             xiang_mu_dai_ma=#{xiangMuDaiMa},
         </if>
@@ -142,6 +141,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <if test="niXinZenYongDiQingKuang!=null">
             ni_xin_zen_yong_di_qing_kuang=#{niXinZenYongDiQingKuang},
         </if>
+
+        <if test="originFileNameListStr!=null">
+            origin_file_name_list_str=#{originFileNameListStr},
+        </if>
+        <if test="curFilePathAndNameListStr!=null">
+            cur_file_path_and_name_list_str=#{curFilePathAndNameListStr},
+        </if>
         update_user_id=#{updateUserId},
         update_time=now()
         where id=#{id}
@@ -150,16 +156,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <insert id="insertProjectBase" parameterType="com.ruoyi.project.projectmanage.domain.ProjectBase" useGeneratedKeys="true" keyProperty="id">
         insert into project_base (
          project_name, current_liu_cheng_tu_data_log_id, create_time,
-          update_user_id, update_time,remark,contents_set_str,project_main_image_path_and_name,
+          update_user_id, update_time,remark,contents_set_str,
          xiang_mu_dai_ma,mu_qian_jie_duan, xiang_mu_di_zhi, xiang_mu_lei_xing, jian_she_xing_zhi, zong_tou_zi,
          ni_kai_gong_ri_qi, ni_wan_gong_ri_qi, jian_she_dan_wei, xiang_mu_fu_ze_ren, lian_xi_fang_shi,
-         zhu_yao_jian_she_nei_rong, ni_xin_zen_yong_di_qing_kuang)
+         zhu_yao_jian_she_nei_rong, ni_xin_zen_yong_di_qing_kuang,origin_file_name_list_str,cur_file_path_and_name_list_str)
         VALUES
         (#{projectName},#{currentLiuChengTuDataLogId},now(),
-          #{updateUserId}, now(),#{remark},#{contentsSetStr},#{projectMainImagePathAndName},
+          #{updateUserId}, now(),#{remark},#{contentsSetStr},
          #{xiangMuDaiMa}, #{muQianJieDuan}, #{xiangMuDiZhi},#{xiangMuLeiXing}, #{jianSheXingZhi},#{zongTouZi},
           #{niKaiGongRiQi},#{niWanGongRiQi},#{jianSheDanWei}, #{xiangMuFuZeRen},#{lianXiFangShi},
-          #{zhuYaoJianSheNeiRong},#{niXinZenYongDiQingKuang}
+          #{zhuYaoJianSheNeiRong},#{niXinZenYongDiQingKuang},#{originFileNameListStr},#{curFilePathAndNameListStr}
          )
     </insert>
 
@@ -170,6 +176,4 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         update_time=now()
         where id=#{id}
     </update>
-
-
 </mapper>
