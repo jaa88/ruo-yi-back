@@ -51,11 +51,47 @@ public class ProjectBase {
     private String zhuYaoJianSheNeiRong;
     //你新增用地情况
     private String niXinZenYongDiQingKuang;
-
     //20250828
     //文件 ，上述两个list的拼接，以*@*分割
     private String originFileNameListStr;
     private String curFilePathAndNameListStr;
+    //增加设计单位、监理单位、接养单位
+    private String sheJiDanWei;
+    private String jianLiDanWei;
+    private String jieYangDanWei;
+    private String shiGongDanWei;
+
+    public String getShiGongDanWei() {
+        return shiGongDanWei;
+    }
+
+    public void setShiGongDanWei(String shiGongDanWei) {
+        this.shiGongDanWei = shiGongDanWei;
+    }
+
+    public String getSheJiDanWei() {
+        return sheJiDanWei;
+    }
+
+    public void setSheJiDanWei(String sheJiDanWei) {
+        this.sheJiDanWei = sheJiDanWei;
+    }
+
+    public String getJianLiDanWei() {
+        return jianLiDanWei;
+    }
+
+    public void setJianLiDanWei(String jianLiDanWei) {
+        this.jianLiDanWei = jianLiDanWei;
+    }
+
+    public String getJieYangDanWei() {
+        return jieYangDanWei;
+    }
+
+    public void setJieYangDanWei(String jieYangDanWei) {
+        this.jieYangDanWei = jieYangDanWei;
+    }
 
     public String getOriginFileNameListStr() {
         return originFileNameListStr;

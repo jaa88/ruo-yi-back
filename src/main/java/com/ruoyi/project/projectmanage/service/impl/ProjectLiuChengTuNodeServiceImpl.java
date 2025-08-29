@@ -32,4 +32,9 @@ public class ProjectLiuChengTuNodeServiceImpl implements IProjectLiuChengTuNodeS
     public void deleteProjectLiuChengTuNodeByProjectBaseId(Long projectBaseId) {
         projectLiuChengTuNodeMapper.deleteProjectLiuChengTuNodeByProjectBaseId(projectBaseId);
     }
+
+    @Override
+    public List<ProjectLiuChengTuNode> selectSimpleProjectLiuChengTuNodeListByProjectBaseIdList(List<Long> list) {
+        return projectLiuChengTuNodeMapper.selectSimpleProjectLiuChengTuNodeListByProjectBaseIdList(list);
+    }
 }

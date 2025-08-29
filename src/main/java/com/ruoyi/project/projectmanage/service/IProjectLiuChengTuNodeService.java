@@ -12,4 +12,6 @@ public interface IProjectLiuChengTuNodeService
     void insertProjectLiuChengTuNodeList(List<ProjectLiuChengTuNode> nodeList);
 
     void deleteProjectLiuChengTuNodeByProjectBaseId(Long projectBaseId);
+
+    List<ProjectLiuChengTuNode> selectSimpleProjectLiuChengTuNodeListByProjectBaseIdList(List<Long> list);
 }
