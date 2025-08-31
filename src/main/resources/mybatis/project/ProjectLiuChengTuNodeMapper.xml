@@ -11,18 +11,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="taskName"    column="task_name"    />
         <result property="updateTime"    column="update_time"    />
         <result property="startTime"   column="start_time"   />
+        <result property="endTime"   column="end_time"   />
+        <result property="expectedStartTime"      column="expected_start_time"      />
         <result property="expectedEndTime"      column="expected_end_time"      />
     </resultMap>
 
     <insert id="insertProjectLiuChengTuNodeList" parameterType="list" useGeneratedKeys="true" keyProperty="id">
         insert into project_liu_cheng_tu_node (
         project_base_id, graph_node_id, data_json_str,
-        update_time, update_user_id,status,task_name,start_time,expected_end_time,origin_file_name_list_str,cur_file_path_and_name_list_str )
+        update_time, update_user_id,status,task_name,start_time,expected_end_time,origin_file_name_list_str,cur_file_path_and_name_list_str,end_time,expected_start_time )
         VALUES
         <foreach collection="list" item="item" separator=",">
             (#{item.projectBaseId},#{item.graphNodeId},#{item.dataJsonStr},
              now(), #{item.updateUserId},#{item.status},#{item.taskName},#{item.startTime},#{item.expectedEndTime}
             ,#{item.originFileNameListStr},#{item.curFilePathAndNameListStr}
+            ,#{item.endTime},#{item.expectedStartTime}
             )
         </foreach>
     </insert>

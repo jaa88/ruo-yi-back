@@ -60,54 +60,9 @@ public class ProjectBaseServiceImpl implements IProjectBaseService {
     public List<ProjectBase> selectProjectBaseList(QueryProjectBaseParam param) {
         List<ProjectBase> list= projectBaseMapper.selectProjectBaseList(param);
         //补充流程图数据
-        List<Long> currentLiuChengTuDataIdList=new ArrayList<>();
-        for(ProjectBase projectBase:list){
-            if(projectBase.getCurrentLiuChengTuDataLogId()!=null){
-                currentLiuChengTuDataIdList.add(projectBase.getCurrentLiuChengTuDataLogId());
-            }
-        }
-        if(currentLiuChengTuDataIdList.size()>0){
-            Map<Long, ProjectLiuChengTuDataLog> idTargetProjectLiuChengTuDataLogMap=projectLiuChengTuService.selectIdTargetProjectLiuChengTuDataLogMap(currentLiuChengTuDataIdList);
-            for(ProjectBase projectBase:list){
-                if(idTargetProjectLiuChengTuDataLogMap.get(projectBase.getCurrentLiuChengTuDataLogId())!=null){
-                    projectBase.setCellsJsonStr(idTargetProjectLiuChengTuDataLogMap.get(projectBase.getCurrentLiuChengTuDataLogId()).getCurrentCellsJsonStr());
-                }
-            }
-        }
+        suppleyProjectBaseTargetData(list);
         //补充流程图与部门之间的关系
-        Map<Long,SysDept> sysDeptMap=sysUserService.selectAllDeptMap();
-        List<Long> projectIdList=new ArrayList<>();
-        for(ProjectBase projectBase:list){
-            projectIdList.add(projectBase.getId());
-        }
-        //查现有的关系
-        QueryProjectBaseAndDeptRelationParam queryProjectBaseAndDeptRelationParam=new QueryProjectBaseAndDeptRelationParam();
-        queryProjectBaseAndDeptRelationParam.setProjectBaseIdList(projectIdList);
-        List<ProjectBaseAndDeptRelation> projectBaseAndDeptRelationList=projectBaseAndDeptRelationService.selectProjectBaseAndDeptRelationList(queryProjectBaseAndDeptRelationParam);
-        if(projectBaseAndDeptRelationList.size()>0 && sysDeptMap.size()>0){
-            Map<Long,List<SysDept>> projectBaseIdTargetDeptListMap=new HashMap<>();
-            Map<Long,List<Long>> projectBaseIdTargetDeptIdListMap=new HashMap<>();
-            for(ProjectBaseAndDeptRelation relation:projectBaseAndDeptRelationList){
-                List<SysDept> deptList=projectBaseIdTargetDeptListMap.get(relation.getProjectBaseId());
-                List<Long> deptIdList=projectBaseIdTargetDeptIdListMap.get(relation.getProjectBaseId());
-                if(deptList==null){
-                    deptList=new ArrayList<>();
-                    deptIdList=new ArrayList<>();
-                }
-                if(sysDeptMap.get(relation.getDeptId())!=null){
-                    deptList.add(sysDeptMap.get(relation.getDeptId()));
-                    deptIdList.add(relation.getDeptId());
-                }
-                projectBaseIdTargetDeptListMap.put(relation.getProjectBaseId(),deptList);
-                projectBaseIdTargetDeptIdListMap.put(relation.getProjectBaseId(),deptIdList);
-            }
-            //补充
-            for(ProjectBase projectBase:list){
-                Long projectBaseId=projectBase.getId();
-                projectBase.setDeptList(projectBaseIdTargetDeptListMap.get(projectBaseId));
-                projectBase.setDeptIdList(projectBaseIdTargetDeptIdListMap.get(projectBaseId));
-            }
-        }
+        supplyProjectBaseTargetDept(list);
         //补充流程图中的节点与部门之间的关系，目前没有用到 0816
         supplyProjectLiuChengTuTargetDeptRelation(list);
         return list;
@@ -123,7 +78,6 @@ public class ProjectBaseServiceImpl implements IProjectBaseService {
         }
         projectBaseMapper.updateProjectBase(projectBase);
     }
-
 
 
     @Override
@@ -263,26 +217,8 @@ public class ProjectBaseServiceImpl implements IProjectBaseService {
                 //以下是从dataJsonStr中提取的东西
                 node.setStatus(dataJSONObject.getInteger("status"));
                 node.setTaskName(dataJSONObject.getString("taskName"));
-                //转换开始时间
-                String startTimeStr=dataJSONObject.getString("startTime");
-                if(startTimeStr!=null && !"".equals(startTimeStr)){
-                    try {
-                        node.setStartTime(TimeUtil.geTimeFromStr(startTimeStr,"yyyy-MM-dd"));
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                        node.setStartTime(null);
-                    }
-                }
-                //转换预期结束时间
-                String expectedEndTime=dataJSONObject.getString("expectedEndTime");
-                if(expectedEndTime!=null && !"".equals(expectedEndTime)){
-                    try {
-                        node.setExpectedEndTime(TimeUtil.geTimeFromStr(expectedEndTime,"yyyy-MM-dd"));
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                        node.setExpectedEndTime(null);
-                    }
-                }
+                //转换并设置时间
+                transferDate(node,dataJSONObject);
                 //文件相关
                 String originFileNameListStr=dataJSONObject.getString("originFileNameListStr");
                 String curFilePathAndNameListStr=dataJSONObject.getString("curFilePathAndNameListStr");
@@ -294,6 +230,50 @@ public class ProjectBaseServiceImpl implements IProjectBaseService {
             }
         }
         return nodeList;
+    }
+
+    private void transferDate(ProjectLiuChengTuNode node,JSONObject dataJSONObject){
+        //转换开始时间
+        String startTimeStr=dataJSONObject.getString("startTime");
+        if(startTimeStr!=null && !"".equals(startTimeStr)){
+            try {
+                node.setStartTime(TimeUtil.geTimeFromStr(startTimeStr,"yyyy-MM-dd"));
+            } catch (ParseException e) {
+                e.printStackTrace();
+                node.setStartTime(null);
+            }
+        }
+        //转换结束时间
+        String endTimeStr=dataJSONObject.getString("endTime");
+        if(endTimeStr!=null && !"".equals(endTimeStr)){
+            try {
+                node.setEndTime(TimeUtil.geTimeFromStr(endTimeStr,"yyyy-MM-dd"));
+            } catch (ParseException e) {
+                e.printStackTrace();
+                node.setEndTime(null);
+            }
+        }
+
+        //转换预期开始时间
+        String expectedStartTime=dataJSONObject.getString("expectedStartTime");
+        if(expectedStartTime!=null && !"".equals(expectedStartTime)){
+            try {
+                node.setExpectedStartTime(TimeUtil.geTimeFromStr(expectedStartTime,"yyyy-MM-dd"));
+            } catch (ParseException e) {
+                e.printStackTrace();
+                node.setExpectedStartTime(null);
+            }
+        }
+        //转换预期结束时间
+        String expectedEndTime=dataJSONObject.getString("expectedEndTime");
+        if(expectedEndTime!=null && !"".equals(expectedEndTime)){
+            try {
+                node.setExpectedEndTime(TimeUtil.geTimeFromStr(expectedEndTime,"yyyy-MM-dd"));
+            } catch (ParseException e) {
+                e.printStackTrace();
+                node.setExpectedEndTime(null);
+            }
+        }
     }
 
     //生成节点与部门之间的关系
@@ -328,6 +308,8 @@ public class ProjectBaseServiceImpl implements IProjectBaseService {
         if(projectBaseIdList.size()>0){
             QueryProjectLiuChengTuNodeTargetDeptRelationParam param=new QueryProjectLiuChengTuNodeTargetDeptRelationParam();
             param.setProjectBaseIdList(projectBaseIdList);
+            param.setStartIndex(0);
+            param.setPageSize(4000);
             List<ProjectLiuChengTuNodeTargetDeptRelation> relationList=projectLiuChengTuNodeTargetDeptRelationService.selectProjectLiuChengTuNodeTargetDeptRelationList(param);
             Map<Long,List<ProjectLiuChengTuNodeTargetDeptRelation>> projectBaseIdTargetRelationListMap=new HashMap<>();
             for(ProjectLiuChengTuNodeTargetDeptRelation relation:relationList){
@@ -346,5 +328,59 @@ public class ProjectBaseServiceImpl implements IProjectBaseService {
         }
     }
 
+    //补充流程图与部门之间的关系
+    private void supplyProjectBaseTargetDept( List<ProjectBase> list){
+        Map<Long,SysDept> sysDeptMap=sysUserService.selectAllDeptMap();
+        List<Long> projectIdList=new ArrayList<>();
+        for(ProjectBase projectBase:list){
+            projectIdList.add(projectBase.getId());
+        }
+        //查现有的关系
+        QueryProjectBaseAndDeptRelationParam queryProjectBaseAndDeptRelationParam=new QueryProjectBaseAndDeptRelationParam();
+        queryProjectBaseAndDeptRelationParam.setProjectBaseIdList(projectIdList);
+        List<ProjectBaseAndDeptRelation> projectBaseAndDeptRelationList=projectBaseAndDeptRelationService.selectProjectBaseAndDeptRelationList(queryProjectBaseAndDeptRelationParam);
+        if(projectBaseAndDeptRelationList.size()>0 && sysDeptMap.size()>0){
+            Map<Long,List<SysDept>> projectBaseIdTargetDeptListMap=new HashMap<>();
+            Map<Long,List<Long>> projectBaseIdTargetDeptIdListMap=new HashMap<>();
+            for(ProjectBaseAndDeptRelation relation:projectBaseAndDeptRelationList){
+                List<SysDept> deptList=projectBaseIdTargetDeptListMap.get(relation.getProjectBaseId());
+                List<Long> deptIdList=projectBaseIdTargetDeptIdListMap.get(relation.getProjectBaseId());
+                if(deptList==null){
+                    deptList=new ArrayList<>();
+                    deptIdList=new ArrayList<>();
+                }
+                if(sysDeptMap.get(relation.getDeptId())!=null){
+                    deptList.add(sysDeptMap.get(relation.getDeptId()));
+                    deptIdList.add(relation.getDeptId());
+                }
+                projectBaseIdTargetDeptListMap.put(relation.getProjectBaseId(),deptList);
+                projectBaseIdTargetDeptIdListMap.put(relation.getProjectBaseId(),deptIdList);
+            }
+            //补充
+            for(ProjectBase projectBase:list){
+                Long projectBaseId=projectBase.getId();
+                projectBase.setDeptList(projectBaseIdTargetDeptListMap.get(projectBaseId));
+                projectBase.setDeptIdList(projectBaseIdTargetDeptIdListMap.get(projectBaseId));
+            }
+        }
+    }
+
+    //补充流程图数据
+    private void suppleyProjectBaseTargetData(List<ProjectBase> list){
+        List<Long> currentLiuChengTuDataIdList=new ArrayList<>();
+        for(ProjectBase projectBase:list){
+            if(projectBase.getCurrentLiuChengTuDataLogId()!=null){
+                currentLiuChengTuDataIdList.add(projectBase.getCurrentLiuChengTuDataLogId());
+            }
+        }
+        if(currentLiuChengTuDataIdList.size()>0){
+            Map<Long, ProjectLiuChengTuDataLog> idTargetProjectLiuChengTuDataLogMap=projectLiuChengTuService.selectIdTargetProjectLiuChengTuDataLogMap(currentLiuChengTuDataIdList);
+            for(ProjectBase projectBase:list){
+                if(idTargetProjectLiuChengTuDataLogMap.get(projectBase.getCurrentLiuChengTuDataLogId())!=null){
+                    projectBase.setCellsJsonStr(idTargetProjectLiuChengTuDataLogMap.get(projectBase.getCurrentLiuChengTuDataLogId()).getCurrentCellsJsonStr());
+                }
+            }
+        }
+    }
 
 }

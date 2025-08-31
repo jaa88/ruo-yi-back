@@ -17,6 +17,8 @@ public class ProjectLiuChengTuNode {
     private Integer status;
     private String taskName;
     private Date startTime;
+    private Date endTime;
+    private Date expectedStartTime;
     private Date expectedEndTime;
     //文件
     private List<String> originFileNameList;
@@ -25,6 +27,21 @@ public class ProjectLiuChengTuNode {
     private String originFileNameListStr;
     private String curFilePathAndNameListStr;
 
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
+    }
+
+    public Date getExpectedStartTime() {
+        return expectedStartTime;
+    }
+
+    public void setExpectedStartTime(Date expectedStartTime) {
+        this.expectedStartTime = expectedStartTime;
+    }
 
     public List<String> getOriginFileNameList() {
         return originFileNameList;

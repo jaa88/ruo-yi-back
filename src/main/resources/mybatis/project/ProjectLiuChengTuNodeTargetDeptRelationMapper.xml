@@ -20,6 +20,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="expectedEndTime"    column="expected_end_time"    />
         <result property="originFileNameListStr"    column="origin_file_name_list_str"    />
         <result property="curFilePathAndNameListStr"    column="cur_file_path_and_name_list_str"    />
+
+        <result property="endTime"    column="end_time"    />
+        <result property="expectedStartTime"    column="expected_start_time"    />
     </resultMap>
 
     <insert id="insertProjectLiuChengTuNodeTargetDeptRelationList" parameterType="list">

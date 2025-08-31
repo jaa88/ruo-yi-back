@@ -26,6 +26,25 @@ public class ProjectLiuChengTuNodeTargetDeptRelation {
     private Date expectedEndTime;
     private String originFileNameListStr;
     private String curFilePathAndNameListStr;
+    //添加实际结束时间，预期开始时间
+    private Date endTime;
+    private Date expectedStartTime;
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
+    }
+
+    public Date getExpectedStartTime() {
+        return expectedStartTime;
+    }
+
+    public void setExpectedStartTime(Date expectedStartTime) {
+        this.expectedStartTime = expectedStartTime;
+    }
 
     public String getOriginFileNameListStr() {
         return originFileNameListStr;
